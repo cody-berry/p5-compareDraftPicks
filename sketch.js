@@ -4,22 +4,25 @@
  *
  */
 
+
 let font
 let fixedWidthFont
 let variableWidthFont
 let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 
+let searchBox = ""
+
 
 function preload() {
-    font = loadFont('data/consola.ttf')
+    font = loadFont('data/meiryo.ttf')
     fixedWidthFont = loadFont('data/consola.ttf')
     variableWidthFont = loadFont('data/meiryo.ttf')
 }
 
 
 function setup() {
-    let cnv = createCanvas(600, 300)
+    let cnv = createCanvas(500, 1500)
     cnv.parent('#canvas')
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
@@ -34,15 +37,41 @@ function setup() {
 
 
 function draw() {
-    background(234, 34, 24)
+    background(0, 0, 0)
 
-    /* debugCorner needs to be last so its z-index is highest */
-    debugCorner.setText(`frameCount: ${frameCount}`, 2)
-    debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
-    debugCorner.showBottom()
+    textSize(50)
+    fill(0, 0, 100)
+    stroke(0, 0, 100)
+    strokeWeight(3)
+    textAlign(LEFT, TOP)
+    text("SEARCH", 0, 0)
 
-    if (frameCount > 3000)
-        noLoop()
+    // text box
+    rectMode(CORNER)
+    textSize(15)
+    noFill()
+    stroke(0, 0, 50)
+    strokeWeight(1)
+    rect(5, 100, 490, 30)
+    stroke(0, 0, 100)
+    strokeWeight(1)
+    if (frameCount % 60 <= 30) {
+        line(textWidth(searchBox) + 12, 105, textWidth(searchBox) + 12, 125)
+    }
+
+    // text in text box
+    noStroke()
+    fill(0, 0, 100)
+    textAlign(LEFT, CENTER)
+    text(searchBox, 10, 115)
+
+    // /* debugCorner needs to be last so its z-index is highest */
+    // debugCorner.setText(`frameCount: ${frameCount}`, 2)
+    // debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
+    // debugCorner.showBottom()
+
+    // if (frameCount > 3000)
+    //     noLoop()
 }
 
 
@@ -52,6 +81,41 @@ function keyPressed() {
         noLoop()
         instructions.html(`<pre>
             sketch stopped</pre>`)
+    }
+
+    if ([
+        "a", "b", "c", "d", "e",
+        "f", "g", "h", "i", "j",
+        "k", "l", "m", "n", "o",
+        "p", "q", "r", "s", "t",
+        "u", "v", "w", "x", "y",
+        "z", "A", "B", "C", "D",
+        "E", "F", "G", "H", "I",
+        "J", "K", "L", "M", "N",
+        "O", "P", "Q", "R", "S",
+        "T", "U", "V", "W", "X",
+        "Y", "Z", "0", "1", "2",
+        "3", "4", "5", "6", "7",
+        "8", "9", " ", "[", "{",
+        "]", "}", "|", "'", ":",
+        ";", ",", ".", "/", "?",
+        "<", ">", "\\"
+    ].includes(key)) {
+        searchBox += key
+    } if (key === "Backspace") {
+        if (keyIsDown(CONTROL)) {
+            if (searchBox.includes(" ")) {
+                while (searchBox[searchBox.length - 1] !== " ") {
+                    searchBox = searchBox.substring(0, searchBox.length - 1)
+                } while (searchBox[searchBox.length - 1] === " ") {
+                    searchBox = searchBox.substring(0, searchBox.length - 1)
+                }
+            } else {
+                searchBox = ""
+            }
+        } else {
+            searchBox = searchBox.substring(0, searchBox.length - 1)
+        }
     }
 
     if (key === '`') { /* toggle debug corner visibility */
