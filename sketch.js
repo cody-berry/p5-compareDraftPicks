@@ -11,18 +11,22 @@ let variableWidthFont
 let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 
+let data
+let cardNames
 let searchBox = ""
+let option
 
 
 function preload() {
     font = loadFont('data/meiryo.ttf')
     fixedWidthFont = loadFont('data/consola.ttf')
     variableWidthFont = loadFont('data/meiryo.ttf')
+    data = loadJSON("json/master.json")
 }
 
 
 function setup() {
-    let cnv = createCanvas(500, 1500)
+    let cnv = createCanvas(500, 800)
     cnv.parent('#canvas')
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
@@ -33,6 +37,7 @@ function setup() {
         numpad 1 → freeze sketch</pre>`)
 
     debugCorner = new CanvasDebugCorner(5)
+    cardNames = Object.keys(data)
 }
 
 
@@ -65,6 +70,59 @@ function draw() {
     textAlign(LEFT, CENTER)
     text(searchBox, 10, 115)
 
+    // get matches
+    fill(0, 0, 50)
+    let matchedNames = []
+    let yPos = 150
+    if (searchBox) {
+        // first matches are ones where the first match is at the beginning
+        let i = 0
+        while (i < 20) {
+            for (let cardName of cardNames) {
+                // make sure there's no repeats!
+                if (!matchedNames.includes(cardName) && cardName.toLowerCase().substring(i, i + searchBox.length) === searchBox.toLowerCase()) {
+                    // limit is 9
+                    if (matchedNames.length < 9) {
+                        matchedNames.push(cardName)
+                    }
+                }
+            }
+            i += 1
+        }
+    }
+
+    let i = 0
+    for (let cardName of matchedNames) {
+        i += 1
+
+        // display the alternating table color
+        fill(0, 0, 20 + 10*(i % 2))
+
+        // if it is the selected option, make it orange
+        if (i - 1 === (option + matchedNames.length*10000) % matchedNames.length) {
+            fill(30, 100, 50)
+        }
+        rect(0, yPos - 15, width, 30)
+
+        // display the card name
+        fill(0, 0, 100)
+        text(cardName, 10, yPos - 3)
+
+        // bold the first match. not all of them
+        stroke(0, 0, 100)
+        strokeWeight(1)
+        text(cardName.substring(cardName.toLowerCase().indexOf(searchBox.toLowerCase()),
+            cardName.toLowerCase().indexOf(searchBox.toLowerCase()) + searchBox.length),
+            10 + textWidth(cardName.substring(0, cardName.toLowerCase().indexOf(searchBox.toLowerCase()))), yPos - 3)
+        noStroke()
+        yPos += 30
+    }
+    // if there are no matches, say it
+    if (i === 0 && searchBox) {
+        text("No matches found", 10, 150)
+    }
+
+
     // /* debugCorner needs to be last so its z-index is highest */
     // debugCorner.setText(`frameCount: ${frameCount}`, 2)
     // debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
@@ -84,25 +142,29 @@ function keyPressed() {
     }
 
     if ([
-        "a", "b", "c", "d", "e",
-        "f", "g", "h", "i", "j",
-        "k", "l", "m", "n", "o",
-        "p", "q", "r", "s", "t",
-        "u", "v", "w", "x", "y",
-        "z", "A", "B", "C", "D",
-        "E", "F", "G", "H", "I",
-        "J", "K", "L", "M", "N",
-        "O", "P", "Q", "R", "S",
-        "T", "U", "V", "W", "X",
-        "Y", "Z", "0", "1", "2",
-        "3", "4", "5", "6", "7",
-        "8", "9", " ", "[", "{",
-        "]", "}", "|", "'", ":",
-        ";", ",", ".", "/", "?",
-        "<", ">", "\\"
+        'a', 'b', 'c', 'd', 'e',
+        'f', 'g', 'h', 'i', 'j',
+        'k', 'l', 'm', 'n', 'o',
+        'p', 'q', 'r', 's', 't',
+        'u', 'v', 'w', 'x', 'y',
+        'z', 'A', 'B', 'C', 'D',
+        'E', 'F', 'G', 'H', 'I',
+        'J', 'K', 'L', 'M', 'N',
+        'O', 'P', 'Q', 'R', 'S',
+        'T', 'U', 'V', 'W', 'X',
+        'Y', 'Z', '0', '1', '2',
+        '3', '4', '5', '6', '7',
+        '8', '9', ')', '!', '@',
+        '#', '$', '%', '^', '&',
+        '*', '(', ' ', '[', '{',
+        ']', '}', '|', '"', ':',
+        ';', ',', '.', '/', '?',
+        '<', '>', '\'', '\\'
     ].includes(key)) {
         searchBox += key
+        option = 0
     } if (key === "Backspace") {
+        option = 0
         if (keyIsDown(CONTROL)) {
             if (searchBox.includes(" ")) {
                 while (searchBox[searchBox.length - 1] !== " ") {
@@ -116,6 +178,12 @@ function keyPressed() {
         } else {
             searchBox = searchBox.substring(0, searchBox.length - 1)
         }
+    } if (keyCode === UP_ARROW) {
+        option -= 1
+        print(option)
+    } if (keyCode === DOWN_ARROW) {
+        option += 1
+        print(option)
     }
 
     if (key === '`') { /* toggle debug corner visibility */
