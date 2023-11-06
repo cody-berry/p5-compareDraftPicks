@@ -16,6 +16,9 @@ let cardNames
 let searchBox = ""
 let option
 
+let cardsSelected = []
+let addSelectedOptionToCards = false
+let heightNeeded = 0
 
 function preload() {
     font = loadFont('data/meiryo.ttf')
@@ -42,7 +45,8 @@ function setup() {
 
 
 function draw() {
-    background(0, 0, 0)
+    resizeCanvas(500, heightNeeded)
+    background(0, 0, 20)
 
     textSize(50)
     fill(0, 0, 100)
@@ -98,10 +102,21 @@ function draw() {
         // display the alternating table color
         fill(0, 0, 20 + 10*(i % 2))
 
+        // if it is part of the cards list, make it green
+        if (cardsSelected.includes(cardName)) {
+            fill(120, 50, 50)
+        }
+
         // if it is the selected option, make it orange
+        // "+ matchedNames.length*10000" ensures that negative options
+        // don't prompt no card display
         if (i - 1 === (option + matchedNames.length*10000) % matchedNames.length) {
             fill(30, 100, 50)
+            if (cardsSelected.includes(cardName)) {
+                fill(52, 87, 50)
+            }
         }
+
         rect(0, yPos - 15, width, 30)
 
         // display the card name
@@ -122,6 +137,50 @@ function draw() {
         text("No matches found", 10, 150)
     }
 
+    // if there are matches and addSelectedOptionToCards is true...
+    if (matchedNames.length && addSelectedOptionToCards) {
+        // add the selected option to the card list
+        let cardName = matchedNames[(option + matchedNames.length*10000) % matchedNames.length]
+        if (cardsSelected.indexOf(cardName) !== -1) {
+            cardsSelected.splice(cardsSelected.indexOf(cardName), 1)
+        } else {
+            cardsSelected.push(cardName)
+        }
+
+        print(cardsSelected)
+    }
+
+    // make sure that the option isn't added to the list the next time
+    addSelectedOptionToCards = false
+
+    // display the card list header
+    fill(0, 0, 100)
+    textSize(40)
+    stroke(0, 0, 100)
+    strokeWeight(2)
+    textAlign(TOP, LEFT)
+    text("CARD LIST", 0, 470)
+
+    // display all cards selected
+    i = 0
+    yPos = 500
+    noStroke()
+    textSize(15)
+    textAlign(LEFT, CENTER)
+    for (let cardName of cardsSelected) {
+        i += 1
+
+        // display the alternating table color
+        fill(0, 0, 20 + 10*(i % 2))
+        rect(0, yPos - 15, width, 30)
+
+        // display the card name
+        fill(0, 0, 100)
+        text(cardName, 10, yPos - 3)
+
+        yPos += 30
+    }
+    heightNeeded = yPos + 50
 
     // /* debugCorner needs to be last so its z-index is highest */
     // debugCorner.setText(`frameCount: ${frameCount}`, 2)
@@ -180,10 +239,10 @@ function keyPressed() {
         }
     } if (keyCode === UP_ARROW) {
         option -= 1
-        print(option)
     } if (keyCode === DOWN_ARROW) {
         option += 1
-        print(option)
+    } if (keyCode === ENTER) {
+        addSelectedOptionToCards = true
     }
 
     if (key === '`') { /* toggle debug corner visibility */
