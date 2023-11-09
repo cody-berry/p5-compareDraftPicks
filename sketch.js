@@ -21,6 +21,7 @@ let addSelectedOptionToCards = false
 let heightNeeded = 0
 
 let displayState = "SEARCH"
+let gradeColors
 
 function preload() {
     font = loadFont('data/meiryo.ttf')
@@ -29,6 +30,49 @@ function preload() {
     data = loadJSON("json/master.json")
 }
 
+function calculateGrade(zScore) {
+    let result
+
+    // special: S
+    if (zScore > 3.25)
+        result = "S"
+    // A range
+    else if (zScore > (2.5 - 1 / 3))
+        result = "A+"
+    else if (zScore > (1.5 + 1 / 3))
+        result = "A"
+    else if (zScore > 1.5)
+        result = "A-"
+    // B range
+    else if (zScore > (1.5 - 1 / 3))
+        result = "B+"
+    else if (zScore > (0.5 + 1 / 3))
+        result = "B"
+    else if (zScore > 0.5)
+        result = "B-"
+    // C range
+    else if (zScore > (0.5 - 1 / 3))
+        result = "C+"
+    else if (zScore > (-0.5 + 1 / 3))
+        result = "C"
+    else if (zScore > -0.5)
+        result = "C-"
+    // D range
+    else if (zScore > (-0.5 - 1 / 3))
+        result = "D+"
+    else if (zScore > (-1.5 + 1 / 3))
+        result = "D"
+    else if (zScore > -1.5)
+        result = "D-"
+    // E range
+    else if (zScore > -2)
+        result = "E"
+    // F range
+    else
+        result = "F"
+
+    return result
+}
 
 function setup() {
     let cnv = createCanvas(500, 800)
@@ -43,6 +87,25 @@ function setup() {
 
     debugCorner = new CanvasDebugCorner(5)
     cardNames = Object.keys(data)
+    gradeColors = {
+        "S": [140, 100, 77],
+        "A+": [137, 82, 77],
+        "A": [129, 67, 78],
+        "A-": [116, 56, 79],
+        "B+": [101, 55, 80],
+        "B": [87, 54, 81],
+        "B-": [72, 53, 82],
+        "C+": [57, 53, 85],
+        "C": [46, 58, 97],
+        "C-": [34, 61, 93],
+        "D+": [22, 65, 90],
+        "D": [10, 68, 87],
+        "D-": [359, 74, 84],
+        "E": [354, 83, 82],
+        "F": [350, 92, 80]
+    }
+    print(cardNames)
+
 }
 
 
@@ -196,10 +259,21 @@ function draw() {
         textAlign(LEFT, TOP)
         text("STATS", 0, 0)
 
+        // display headers
+        fill(0, 0, 50)
+        noStroke()
+        textSize(12)
+        text("Name", 10, 65)
+        text("Grade", 240, 55)
+        textSize(10)
+        text("OH", 240, 68)
+        text("GIH", 280, 68)
+        text("IWD", 320, 68)
+
+
         // display card list
         let i = 0
         let yPos = 100
-        noStroke()
         textSize(15)
         textAlign(LEFT, CENTER)
         for (let cardName of cardsSelected) {
@@ -212,6 +286,29 @@ function draw() {
             // display the card name
             fill(0, 0, 100)
             text(cardName, 10, yPos - 3)
+
+            // find out the grade
+            let cardStats = data[cardName]["all"]
+            let grade = calculateGrade(cardStats["zScoreOH"])
+            fill(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
+            stroke(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
+            strokeWeight(1)
+            text(grade, 240, yPos - 2)
+
+
+            grade = calculateGrade(cardStats["zScoreGIH"])
+            fill(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
+            stroke(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
+            strokeWeight(1)
+            text(grade, 280, yPos - 2)
+
+
+            grade = calculateGrade(cardStats["zScoreIWD"])
+            fill(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
+            stroke(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
+            strokeWeight(1)
+            text(grade, 320, yPos - 2)
+            noStroke()
 
             yPos += 30
         }
