@@ -249,7 +249,7 @@ function draw() {
         }
         heightNeeded = yPos - 15
     } if (displayState === "STATS") {
-        resizeCanvas(800, heightNeeded)
+        resizeCanvas(900, heightNeeded)
         background(0, 0, 0)
 
         textSize(50)
@@ -267,8 +267,7 @@ function draw() {
         text("Grade", 240, 55)
         textSize(10)
         text("OH", 240, 68)
-        text("GIH", 280, 68)
-        text("IWD", 320, 68)
+        text("GIH", 580, 68)
 
 
         // display card list
@@ -287,27 +286,23 @@ function draw() {
             fill(0, 0, 100)
             text(cardName, 10, yPos - 3)
 
-            // find out the grade
+            // find out the grades and display them
             let cardStats = data[cardName]["all"]
+
+            // OH
             let grade = calculateGrade(cardStats["zScoreOH"])
             fill(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
             stroke(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
             strokeWeight(1)
             text(grade, 240, yPos - 2)
 
-
+            // GIH
             grade = calculateGrade(cardStats["zScoreGIH"])
             fill(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
             stroke(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
             strokeWeight(1)
-            text(grade, 280, yPos - 2)
+            text(grade, 580, yPos - 2)
 
-
-            grade = calculateGrade(cardStats["zScoreIWD"])
-            fill(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
-            stroke(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
-            strokeWeight(1)
-            text(grade, 320, yPos - 2)
             noStroke()
 
             yPos += 30
