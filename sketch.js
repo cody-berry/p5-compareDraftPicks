@@ -260,15 +260,57 @@ function draw() {
         text("STATS", 0, 0)
 
         // display headers
+        // find out ticks for OH WR and GIH WR, which means finding the
+        // maximum OH WR and GIH WR values
+        let maxSamplesOH = 0
+        let maxSamplesGIH = 0
+        for (let cardName of cardsSelected) {
+            let cardStats = data[cardName]["all"]
+            maxSamplesOH = max(maxSamplesOH, cardStats["# OH"])
+            maxSamplesGIH = max(maxSamplesGIH, cardStats["# OH"])
+        }
+        let ticksOH = findTicks(maxSamplesOH)
+        let ticksGIH = findTicks(maxSamplesGIH)
+
+        // process the ticks
+        let zeroTickOH = ticksOH[0]
+        let oneTickOH = ticksOH[1]
+        let twoTickOH = ticksOH[2]
+        let oneTickNumOH = ticksOH[3]
+        let zeroTickGIH = ticksGIH[0]
+        let oneTickGIH = ticksGIH[1]
+        let twoTickGIH = ticksGIH[2]
+        let oneTickNumGIH = ticksGIH[3]
+
+        // now actually display the headers and ticks
         fill(0, 0, 50)
         noStroke()
         textSize(12)
         text("Name", 10, 65)
-        text("Grade", 240, 55)
-        textSize(10)
-        text("OH", 240, 68)
-        text("GIH", 580, 68)
+        text("OH", 240, 65)
+        text("GIH", 580, 65)
 
+        text(zeroTickOH, 282, 65)
+        text(oneTickOH, 332, 65)
+        text(twoTickOH, 382, 65)
+
+        text(zeroTickGIH, 622, 65)
+        text(oneTickGIH, 672, 65)
+        text(twoTickGIH, 722, 65)
+
+        stroke(0, 0, 50)
+        strokeWeight(1)
+
+        // display the lines under the ticks to help users tell how
+        // many samples there are for a card
+        line(290, 85, 290, heightNeeded - 65)
+        line(340, 85, 340, heightNeeded - 65)
+        line(390, 85, 390, heightNeeded - 65)
+        line(630, 85, 630, heightNeeded - 65)
+        line(680, 85, 680, heightNeeded - 65)
+        line(730, 85, 730, heightNeeded - 65)
+
+        noStroke()
 
         // display card list
         let i = 0
@@ -279,7 +321,7 @@ function draw() {
             i += 1
 
             // display the alternating table color
-            fill(0, 0, 20 + 10 * (i % 2))
+            fill(0, 0, 40 + 20 * (i % 2), 50)
             rect(0, yPos - 15, width, 30)
 
             // display the card name
@@ -291,15 +333,23 @@ function draw() {
 
             // OH
             let grade = calculateGrade(cardStats["zScoreOH"])
-            fill(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
-            stroke(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
+            fill(gradeColors[grade][0],
+                 gradeColors[grade][1],
+                 gradeColors[grade][2])
+            stroke(gradeColors[grade][0],
+                   gradeColors[grade][1],
+                   gradeColors[grade][2])
             strokeWeight(1)
             text(grade, 240, yPos - 2)
 
             // GIH
             grade = calculateGrade(cardStats["zScoreGIH"])
-            fill(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
-            stroke(gradeColors[grade][0], gradeColors[grade][1], gradeColors[grade][2])
+            fill(gradeColors[grade][0],
+                 gradeColors[grade][1],
+                 gradeColors[grade][2])
+            stroke(gradeColors[grade][0],
+                   gradeColors[grade][1],
+                   gradeColors[grade][2])
             strokeWeight(1)
             text(grade, 580, yPos - 2)
 
@@ -310,15 +360,54 @@ function draw() {
         heightNeeded = yPos + 50
     }
 
-    // /* debugCorner needs to be last so its z-index is highest */
-    // debugCorner.setText(`frameCount: ${frameCount}`, 2)
-    // debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
-    // debugCorner.showBottom()
+        // /* debugCorner needs to be last so its z-index is highest */
+        // debugCorner.setText(`frameCount: ${frameCount}`, 2)
+        // debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
+        // debugCorner.showBottom()
 
-    // if (frameCount > 3000)
-    //     noLoop()
+        // if (frameCount > 3000)
+        //     noLoop()
 }
 
+function findTicks(maximumValueNeededToRepresent) {
+    let zeroTick = "0K" // the string representation for 0. 0K or 0M.
+    let oneTick = "1K" // the string representation for the first tick.
+    let twoTick = "2K" // the string representation for the second tick.
+    let oneTickNum = 1000 // the number representation for the first tick.
+
+    if (maximumValueNeededToRepresent > 2000) {
+        oneTick = "2.5K"
+        twoTick = "5K"
+        oneTickNum = 2500
+    } if (maximumValueNeededToRepresent > 5000) {
+        oneTick = "6K"
+        twoTick = "12K"
+        oneTickNum = 6000
+    } if (maximumValueNeededToRepresent > 12000) {
+        oneTick = "15K"
+        twoTick = "30K"
+        oneTickNum = 15000
+    } if (maximumValueNeededToRepresent > 30000) {
+        oneTick = "50K"
+        twoTick = "100K"
+        oneTickNum = 50000
+    } if (maximumValueNeededToRepresent > 100000) {
+        zeroTick = "0M"
+        oneTick = "0.1M"
+        twoTick = "0.2M"
+        oneTickNum = 100000
+    } if (maximumValueNeededToRepresent > 200000) {
+        oneTick = "0.25M"
+        twoTick = "0.5M"
+        oneTickNum = 250000
+    } if (maximumValueNeededToRepresent > 500000) {
+        oneTick = "0.25M"
+        twoTick = "0.5M"
+        oneTickNum = 500000
+    }
+
+    return [zeroTick, oneTick, twoTick, oneTickNum]
+}
 
 function keyPressed() {
     /* stop sketch */
