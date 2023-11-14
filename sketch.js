@@ -249,133 +249,191 @@ function draw() {
         }
         heightNeeded = yPos - 15
     } if (displayState === "STATS") {
-        resizeCanvas(900, heightNeeded)
-        background(0, 0, 0)
-
-        textSize(50)
-        fill(0, 0, 100)
-        stroke(0, 0, 100)
-        strokeWeight(3)
-        textAlign(LEFT, TOP)
-        text("STATS", 0, 0)
-
         // display headers
         // find out ticks for OH WR and GIH WR, which means finding the
         // maximum OH WR and GIH WR values
+        // also find out ticks
+        let startOfOH = 240
+        let startOfGIH = 580
         let maxSamplesOH = 0
         let maxSamplesGIH = 0
+        let maxWinrateOH = 0
+        let minWinrateOH = 100
+        let maxWinrateGIH = 0
+        let minWinrateGIH = 100
+        let cardsWithEnoughData = []
         for (let cardName of cardsSelected) {
             let cardStats = data[cardName]["all"]
-            maxSamplesOH = max(maxSamplesOH, cardStats["# OH"])
-            maxSamplesGIH = max(maxSamplesGIH, cardStats["# OH"])
+
+            print(cardStats["OH WR"])
+            if (cardStats["OH WR"] !== "") { // check for enough data
+                maxSamplesOH = max(maxSamplesOH, cardStats["# OH"])
+                maxSamplesGIH = max(maxSamplesGIH, cardStats["# GIH"])
+
+                minWinrateOH = min(minWinrateOH, cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1))
+                maxWinrateOH = max(maxWinrateOH, cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1))
+                minWinrateGIH = min(minWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
+                maxWinrateGIH = max(maxWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
+
+                cardsWithEnoughData.push(cardName)
+            }
         }
-        let ticksOH = findTicks(maxSamplesOH)
-        let ticksGIH = findTicks(maxSamplesGIH)
-
-        // process the ticks
-        let zeroTickOH = ticksOH[0]
-        let oneTickOH = ticksOH[1]
-        let twoTickOH = ticksOH[2]
-        let oneTickNumOH = ticksOH[3]
-        let zeroTickGIH = ticksGIH[0]
-        let oneTickGIH = ticksGIH[1]
-        let twoTickGIH = ticksGIH[2]
-        let oneTickNumGIH = ticksGIH[3]
-
-        // now actually display the headers and ticks
-        fill(0, 0, 50)
-        noStroke()
-        textSize(12)
-        text("Name", 10, 65)
-        text("OH", 240, 65)
-        text("GIH", 580, 65)
-
-        text(zeroTickOH, 282, 65)
-        text(oneTickOH, 332, 65)
-        text(twoTickOH, 382, 65)
-
-        text(zeroTickGIH, 622, 65)
-        text(oneTickGIH, 672, 65)
-        text(twoTickGIH, 722, 65)
-
-        stroke(0, 0, 50)
-        strokeWeight(1)
-
-        // display the lines under the ticks to help users tell how
-        // many samples there are for a card
-        line(290, 85, 290, heightNeeded - 65)
-        line(340, 85, 340, heightNeeded - 65)
-        line(390, 85, 390, heightNeeded - 65)
-        line(630, 85, 630, heightNeeded - 65)
-        line(680, 85, 680, heightNeeded - 65)
-        line(730, 85, 730, heightNeeded - 65)
-
-        noStroke()
-
-        // display card list
-        let i = 0
-        let yPos = 100
-        textSize(15)
-        textAlign(LEFT, CENTER)
-        for (let cardName of cardsSelected) {
-            i += 1
-
-            // display the alternating table color
-            fill(0, 0, 40 + 20 * (i % 2), 50)
-            rect(0, yPos - 15, width, 30)
-
-            // display the card name
+        cardsSelected = cardsWithEnoughData
+        // make sure there are actually cards with enough data!
+        if (cardsSelected.length === 0) {
+            resizeCanvas(200, 150)
+            background(0, 0, 0)
             fill(0, 0, 100)
-            text(cardName, 10, yPos - 3)
-
-            // find out the grades and display them
-            let cardStats = data[cardName]["all"]
-
-            // OH
-            let grade = calculateGrade(cardStats["zScoreOH"])
-            fill(gradeColors[grade][0],
-                 gradeColors[grade][1],
-                 gradeColors[grade][2])
-            stroke(gradeColors[grade][0],
-                   gradeColors[grade][1],
-                   gradeColors[grade][2])
+            noStroke()
+            textAlign(LEFT, TOP)
+            text("There are no cards that \nhave enough data.", 0, 0)
+            text("Please press Ctrl+Enter to \nreturn to searching.", 0, 50)
+            stroke(0, 0, 100)
             strokeWeight(1)
-            text(grade, 240, yPos - 2)
+            text("Cards you selected will \nnot be saved.", 0, 100)
+        } else {
+            let ticksOH = findSampleTicks(maxSamplesOH)
+            let ticksGIH = findSampleTicks(maxSamplesGIH)
 
-            // GIH
-            grade = calculateGrade(cardStats["zScoreGIH"])
-            fill(gradeColors[grade][0],
-                 gradeColors[grade][1],
-                 gradeColors[grade][2])
-            stroke(gradeColors[grade][0],
-                   gradeColors[grade][1],
-                   gradeColors[grade][2])
+            // process the ticks
+            let zeroTickOH = ticksOH[0]
+            let oneTickOH = ticksOH[1]
+            let twoTickOH = ticksOH[2]
+            let oneTickNumOH = ticksOH[3]
+            let zeroTickGIH = ticksGIH[0]
+            let oneTickGIH = ticksGIH[1]
+            let twoTickGIH = ticksGIH[2]
+            let oneTickNumGIH = ticksGIH[3]
+
+            // now actually display the headers and ticks
+            resizeCanvas(920, heightNeeded)
+            background(0, 0, 0)
+
+            textSize(50)
+            fill(0, 0, 100)
+            stroke(0, 0, 100)
+            strokeWeight(3)
+            textAlign(LEFT, TOP)
+            text("STATS", 0, 0)
+            fill(0, 0, 50)
+            noStroke()
+            textSize(12)
+            text("Name", 10, 65)
+            text("OH", 240, 65)
+            text("GD", 580, 65)
+
+            text(zeroTickOH, 282, 65)
+            text(oneTickOH, 332, 65)
+            text(twoTickOH, 382, 65)
+
+            text(zeroTickGIH, 622, 65)
+            text(oneTickGIH, 672, 65)
+            text(twoTickGIH, 722, 65)
+
+            stroke(0, 0, 50)
             strokeWeight(1)
-            text(grade, 580, yPos - 2)
+
+            // display the lines under the ticks to help users tell how
+            // many samples there are for a card
+            line(290, 85, 290, heightNeeded - 65)
+            line(340, 85, 340, heightNeeded - 65)
+            line(390, 85, 390, heightNeeded - 65)
+            line(630, 85, 630, heightNeeded - 65)
+            line(680, 85, 680, heightNeeded - 65)
+            line(730, 85, 730, heightNeeded - 65)
 
             noStroke()
 
-            yPos += 30
+            // display card list
+            let i = 0
+            let yPos = 100
+            textSize(15)
+            textAlign(LEFT, CENTER)
+            for (let cardName of cardsSelected) {
+                i += 1
+
+                // display the alternating table color
+                fill(0, 0, 40 + 20 * (i % 2), 50)
+                rect(0, yPos - 15, width, 30)
+
+                // display the card name
+                fill(0, 0, 100)
+                text(cardName, 10, yPos - 3)
+
+                // find out the grades and display them
+                let cardStats = data[cardName]["all"]
+
+                // OH
+                let grade = calculateGrade(cardStats["zScoreOH"])
+                fill(gradeColors[grade][0],
+                    gradeColors[grade][1],
+                    gradeColors[grade][2])
+                stroke(gradeColors[grade][0],
+                    gradeColors[grade][1],
+                    gradeColors[grade][2])
+                strokeWeight(1)
+                text(grade, 240, yPos - 2)
+
+                // display the rectangle for the samples as well
+                noStroke()
+                fill(0, 0, 100)
+                rect(290, yPos - 4, (cardStats["# OH"] / oneTickNumOH) * 50, 8, 0, 4, 4, 0)
+
+                // GIH
+                grade = calculateGrade(cardStats["zScoreGIH"])
+                fill(gradeColors[grade][0],
+                    gradeColors[grade][1],
+                    gradeColors[grade][2])
+                stroke(gradeColors[grade][0],
+                    gradeColors[grade][1],
+                    gradeColors[grade][2])
+                strokeWeight(1)
+                text(grade, 580, yPos - 2)
+
+                // display the rectangle for the samples as well
+                noStroke()
+                fill(0, 0, 100)
+                rect(630, yPos - 4, (cardStats["# GIH"] / oneTickNumGIH) * 50, 8, 0, 4, 4, 0)
+
+                yPos += 30
+            }
+            heightNeeded = yPos + 50
+            fill(0, 0, 50)
+            textAlign(LEFT, TOP)
+            text("Some cards might not have enough data (<500 samples). Those" +
+                " will not be showed here.", 0, yPos - 10)
+            text("Cards that do not have enough data won't have winrates.", 0, yPos + 10)
         }
-        heightNeeded = yPos + 50
     }
 
-        // /* debugCorner needs to be last so its z-index is highest */
-        // debugCorner.setText(`frameCount: ${frameCount}`, 2)
-        // debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
-        // debugCorner.showBottom()
+    // /* debugCorner needs to be last so its z-index is highest */
+    // debugCorner.setText(`frameCount: ${frameCount}`, 2)
+    // debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
+    // debugCorner.showBottom()
 
-        // if (frameCount > 3000)
-        //     noLoop()
+    // if (frameCount > 3000)
+    //     noLoop()
 }
 
-function findTicks(maximumValueNeededToRepresent) {
+function findSampleTicks(maximumValueNeededToRepresent) {
     let zeroTick = "0K" // the string representation for 0. 0K or 0M.
-    let oneTick = "1K" // the string representation for the first tick.
-    let twoTick = "2K" // the string representation for the second tick.
-    let oneTickNum = 1000 // the number representation for the first tick.
+    let oneTick = "0.1K" // the string representation for the first tick.
+    let twoTick = "0.2K" // the string representation for the second tick.
+    let oneTickNum = 100 // the number representation for the first tick.
 
-    if (maximumValueNeededToRepresent > 2000) {
+    if (maximumValueNeededToRepresent > 200) {
+        oneTick = "0.25K"
+        twoTick = "0.5K"
+        oneTickNum = 250
+    } if (maximumValueNeededToRepresent > 500) {
+        oneTick = "0.5K"
+        twoTick = "1K"
+        oneTickNum = 500
+    } if (maximumValueNeededToRepresent > 1000) {
+        oneTick = "1K"
+        twoTick = "2K"
+        oneTickNum = 1000
+    } if (maximumValueNeededToRepresent > 2000) {
         oneTick = "2.5K"
         twoTick = "5K"
         oneTickNum = 2500
@@ -401,8 +459,8 @@ function findTicks(maximumValueNeededToRepresent) {
         twoTick = "0.5M"
         oneTickNum = 250000
     } if (maximumValueNeededToRepresent > 500000) {
-        oneTick = "0.25M"
-        twoTick = "0.5M"
+        oneTick = "0.5M"
+        twoTick = "1M"
         oneTickNum = 500000
     }
 
@@ -481,7 +539,7 @@ function keyPressed() {
             if (keyIsDown(CONTROL)) {
                 if (!justEnteredSearch) {
                     displayState = "STATS"
-                    heightNeeded = 2738957398
+                    heightNeeded = 100000000000000000000000000000000000
                 }
             }
             else {
