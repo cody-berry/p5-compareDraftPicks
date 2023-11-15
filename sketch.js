@@ -254,7 +254,8 @@ function draw() {
         // maximum OH WR and GIH WR values
         // also find out ticks
         let startOfOH = 240
-        let startOfGIH = 580
+        let startOfGIH = startOfOH + 200
+        let widthNeeded = startOfGIH + 200
         let maxSamplesOH = 0
         let maxSamplesGIH = 0
         let maxWinrateOH = 0
@@ -268,7 +269,7 @@ function draw() {
             print(cardStats["OH WR"])
             if (cardStats["OH WR"] !== "") { // check for enough data
                 maxSamplesOH = max(maxSamplesOH, cardStats["# OH"])
-                maxSamplesGIH = max(maxSamplesGIH, cardStats["# GIH"])
+                maxSamplesGIH = max(maxSamplesGIH, cardStats["# GD"])
 
                 minWinrateOH = min(minWinrateOH, cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1))
                 maxWinrateOH = max(maxWinrateOH, cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1))
@@ -295,7 +296,7 @@ function draw() {
             let ticksOH = findSampleTicks(maxSamplesOH)
             let ticksGIH = findSampleTicks(maxSamplesGIH)
 
-            // process the ticks
+            // process the sample ticks
             let zeroTickOH = ticksOH[0]
             let oneTickOH = ticksOH[1]
             let twoTickOH = ticksOH[2]
@@ -305,8 +306,26 @@ function draw() {
             let twoTickGIH = ticksGIH[2]
             let oneTickNumGIH = ticksGIH[3]
 
+            // find the winrate ticks
+            let winrateTicksGIH = []
+            let winrateTicksOH = []
+            // iterate through every tick needed (increments of 5)
+            for (let i = 0; i < 100; i += 5) {
+                if (i - 5 < maxWinrateOH &&
+                    i + 5 > minWinrateOH) {
+                    winrateTicksOH.push(i)
+                    startOfGIH += 50
+                    widthNeeded += 50
+                }
+                if (i - 5 < maxWinrateGIH &&
+                    i + 5 > minWinrateGIH) {
+                    winrateTicksGIH.push(i)
+                    widthNeeded += 50
+                }
+            }
+
             // now actually display the headers and ticks
-            resizeCanvas(920, heightNeeded)
+            resizeCanvas(widthNeeded, heightNeeded)
             background(0, 0, 0)
 
             textSize(50)
@@ -314,33 +333,54 @@ function draw() {
             stroke(0, 0, 100)
             strokeWeight(3)
             textAlign(LEFT, TOP)
-            text("STATS", 0, 0)
+            text("STATS", 10, 0)
             fill(0, 0, 50)
             noStroke()
             textSize(12)
             text("Name", 10, 65)
-            text("OH", 240, 65)
-            text("GD", 580, 65)
 
-            text(zeroTickOH, 282, 65)
-            text(oneTickOH, 332, 65)
-            text(twoTickOH, 382, 65)
+            fill(0, 0, 100)
+            text("OH", startOfOH, 65)
+            text("GD", startOfGIH, 65)
 
-            text(zeroTickGIH, 622, 65)
-            text(oneTickGIH, 672, 65)
-            text(twoTickGIH, 722, 65)
+            fill(0, 0, 50)
+            text(zeroTickOH, startOfOH + 42, 65)
+            text(oneTickOH, startOfOH + 92, 65)
+            text(twoTickOH, startOfOH + 142, 65)
+
+            text(zeroTickGIH, startOfGIH + 42, 65)
+            text(oneTickGIH, startOfGIH + 92, 65)
+            text(twoTickGIH, startOfGIH + 142, 65)
 
             stroke(0, 0, 50)
             strokeWeight(1)
 
             // display the lines under the ticks to help users tell how
             // many samples there are for a card
-            line(290, 85, 290, heightNeeded - 65)
-            line(340, 85, 340, heightNeeded - 65)
-            line(390, 85, 390, heightNeeded - 65)
-            line(630, 85, 630, heightNeeded - 65)
-            line(680, 85, 680, heightNeeded - 65)
-            line(730, 85, 730, heightNeeded - 65)
+            line(startOfOH + 50, 85, startOfOH + 50, heightNeeded - 65)
+            line(startOfOH + 100, 85, startOfOH + 100, heightNeeded - 65)
+            line(startOfOH + 150, 85, startOfOH + 150, heightNeeded - 65)
+            line(startOfGIH + 50, 85, startOfGIH + 50, heightNeeded - 65)
+            line(startOfGIH + 100, 85, startOfGIH + 100, heightNeeded - 65)
+            line(startOfGIH + 150, 85, startOfGIH + 150, heightNeeded - 65)
+
+            // now display the winrate ticks
+            let xPos = startOfOH + 200
+            for (let winrateTick of winrateTicksOH) {
+                noStroke()
+                text(winrateTick + "%", xPos - 8, 65)
+                stroke(0, 0, 50)
+                line(xPos, 85, xPos, heightNeeded - 65)
+                xPos += 50
+            }
+            xPos = startOfGIH + 200
+            for (let winrateTick of winrateTicksGIH) {
+                noStroke()
+                text(winrateTick + "%", xPos - 8, 65)
+                stroke(0, 0, 50)
+                line(xPos, 85, xPos, heightNeeded - 65)
+                xPos += 50
+            }
 
             noStroke()
 
@@ -372,12 +412,12 @@ function draw() {
                     gradeColors[grade][1],
                     gradeColors[grade][2])
                 strokeWeight(1)
-                text(grade, 240, yPos - 2)
+                text(grade, startOfOH, yPos - 2)
 
                 // display the rectangle for the samples as well
                 noStroke()
                 fill(0, 0, 100)
-                rect(290, yPos - 4, (cardStats["# OH"] / oneTickNumOH) * 50, 8, 0, 4, 4, 0)
+                rect(startOfOH + 50, yPos - 4, (cardStats["# OH"] / oneTickNumOH) * 50, 8, 0, 4, 4, 0)
 
                 // GIH
                 grade = calculateGrade(cardStats["zScoreGIH"])
@@ -388,12 +428,12 @@ function draw() {
                     gradeColors[grade][1],
                     gradeColors[grade][2])
                 strokeWeight(1)
-                text(grade, 580, yPos - 2)
+                text(grade, startOfGIH, yPos - 2)
 
                 // display the rectangle for the samples as well
                 noStroke()
                 fill(0, 0, 100)
-                rect(630, yPos - 4, (cardStats["# GIH"] / oneTickNumGIH) * 50, 8, 0, 4, 4, 0)
+                rect(startOfGIH + 50, yPos - 4, (cardStats["# GD"] / oneTickNumGIH) * 50, 8, 0, 4, 4, 0)
 
                 yPos += 30
             }
@@ -401,8 +441,8 @@ function draw() {
             fill(0, 0, 50)
             textAlign(LEFT, TOP)
             text("Some cards might not have enough data (<500 samples). Those" +
-                " will not be showed here.", 0, yPos - 10)
-            text("Cards that do not have enough data won't have winrates.", 0, yPos + 10)
+                " will not be showed \nhere.", 10, yPos - 10)
+            text("Cards that do not have enough data won't have winrates.", 10, yPos + 30)
         }
     }
 
