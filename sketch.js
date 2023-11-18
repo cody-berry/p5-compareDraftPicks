@@ -23,11 +23,20 @@ let heightNeeded = 0
 let displayState = "SEARCH"
 let gradeColors
 
+let images
+
 function preload() {
     font = loadFont('data/meiryo.ttf')
     fixedWidthFont = loadFont('data/consola.ttf')
     variableWidthFont = loadFont('data/meiryo.ttf')
-    data = loadJSON("json/master.json")
+    data = loadJSON("json/master.json", loadImages)
+}
+
+function loadImages(data) {
+    images = {}
+    for (let cardName of Object.keys(data)) {
+        images[cardName] = loadImage(data[cardName]["all"]["url"])
+    }
 }
 
 function calculateGrade(zScore) {
@@ -79,6 +88,7 @@ function setup() {
     cnv.parent('#canvas')
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
+    print(images)
 
     /* initialize instruction div */
     instructions = select('#ins')
@@ -265,8 +275,6 @@ function draw() {
         let cardsWithEnoughData = []
         for (let cardName of cardsSelected) {
             let cardStats = data[cardName]["all"]
-
-            print(cardStats["OH WR"])
             if (cardStats["OH WR"] !== "") { // check for enough data
                 maxSamplesOH = max(maxSamplesOH, cardStats["# OH"])
                 maxSamplesGIH = max(maxSamplesGIH, cardStats["# GD"])
@@ -292,9 +300,89 @@ function draw() {
             stroke(0, 0, 100)
             strokeWeight(1)
             text("Cards you selected will \nnot be saved.", 0, 100)
-        } else {
+        } else if (cardsSelected.length === 1) { // special case: diplay color pairs
+            // find out ticks for OH WR and GIH WR, which means finding the
+            // maximum OH WR and GIH WR values
+            // also find out ticks
+            let startOfOH = 400
+            let startOfGIH = startOfOH + 200
+            let widthNeeded = startOfGIH + 200
+            let maxSamplesOH = 0
+            let maxSamplesGIH = 0
+            let maxWinrateOH = 0
+            let minWinrateOH = 100
+            let maxWinrateGIH = 0
+            let minWinrateGIH = 100
+            let colorPairsWithEnoughData = []
+            for (let colorPair of [
+                "WU", "WB", "WR", "WG",
+                "UB", "UR", "UG",
+                "BR", "BG",
+                "RG", "all"
+            ]) {
+                let cardStats = data[cardsSelected[0]][colorPair]
+                if (cardStats["OH WR"] !== "") { // check for enough data
+                    maxSamplesOH = max(maxSamplesOH, cardStats["# OH"])
+                    maxSamplesGIH = max(maxSamplesGIH, cardStats["# GD"])
+
+                    minWinrateOH = min(minWinrateOH, cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1))
+                    maxWinrateOH = max(maxWinrateOH, cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1))
+                    minWinrateGIH = min(minWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
+                    maxWinrateGIH = max(maxWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
+
+                    colorPairsWithEnoughData.push(colorPair)
+                }
+            }
+
+            // now for the ticks
             let ticksOH = findSampleTicks(maxSamplesOH)
             let ticksGIH = findSampleTicks(maxSamplesGIH)
+
+            // process the sample ticks
+            let zeroTickOH = ticksOH[0]
+            let oneTickOH = ticksOH[1]
+            let twoTickOH = ticksOH[2]
+            let oneTickNumOH = ticksOH[3]
+            let zeroTickGIH = ticksGIH[0]
+            let oneTickGIH = ticksGIH[1]
+            let twoTickGIH = ticksGIH[2]
+            let oneTickNumGIH = ticksGIH[3]
+
+            // find the winrate ticks
+            let winrateTicksGIH = []
+            let winrateTicksOH = []
+            // iterate through every tick needed (increments of 5)
+            for (let i = 0; i < 100; i += 5) {
+                if (i - 5 < maxWinrateOH &&
+                    i + 5 > minWinrateOH) {
+                    winrateTicksOH.push(i)
+                    startOfGIH += 50
+                    widthNeeded += 50
+                }
+                if (i - 5 < maxWinrateGIH &&
+                    i + 5 > minWinrateGIH) {
+                    winrateTicksGIH.push(i)
+                    widthNeeded += 50
+                }
+            }
+
+            // now actually display the screen
+            resizeCanvas(widthNeeded, 500)
+            background(0, 0, 0)
+
+            textSize(50)
+            fill(0, 0, 100)
+            stroke(0, 0, 100)
+            strokeWeight(3)
+            textAlign(LEFT, TOP)
+            text("STATS", 10, 0)
+
+            // display the image for the card
+            let imageToDisplay = images[cardsSelected[0]]
+            image(imageToDisplay, 0, 60, 308, 429)
+        } else {
+            let ticksOH = findSampleTicks(maxSamplesOH)
+
 
             // process the sample ticks
             let zeroTickOH = ticksOH[0]
@@ -394,6 +482,14 @@ function draw() {
 
                 // display the alternating table color
                 fill(0, 0, 40 + 20 * (i % 2), 50)
+
+                // if it is the selected option, make it orange
+                // "+ matchedNames.length*10000" ensures that negative options
+                // don't prompt no card display
+                if (i - 1 === (option + cardsSelected.length * 10000) % cardsSelected.length) {
+                    fill(30, 100, 90 + 10 * (i % 2), 50)
+                }
+
                 rect(0, yPos - 15, width, 30)
 
                 // display the card name
@@ -419,6 +515,11 @@ function draw() {
                 fill(0, 0, 100)
                 rect(startOfOH + 50, yPos - 4, (cardStats["# OH"] / oneTickNumOH) * 50, 8, 0, 4, 4, 0)
 
+                // display the point for the winrate
+                stroke(0, 0, 100)
+                strokeWeight(5)
+                point(startOfOH + 200 + (cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1) - winrateTicksOH[0])*10, yPos)
+
                 // GIH
                 grade = calculateGrade(cardStats["zScoreGIH"])
                 fill(gradeColors[grade][0],
@@ -434,6 +535,13 @@ function draw() {
                 noStroke()
                 fill(0, 0, 100)
                 rect(startOfGIH + 50, yPos - 4, (cardStats["# GD"] / oneTickNumGIH) * 50, 8, 0, 4, 4, 0)
+
+                // display the point for the winrate
+                stroke(0, 0, 100)
+                strokeWeight(5)
+                point(startOfGIH + 200 + (cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1) - winrateTicksGIH[0])*10, yPos)
+
+                noStroke()
 
                 yPos += 30
             }
@@ -517,10 +625,20 @@ function keyPressed() {
 
     let justEnteredSearch = false
     if (displayState === "STATS") {
-        if ((keyCode === ENTER) && keyIsDown(CONTROL)) {
-            displayState = "SEARCH"
-            justEnteredSearch = true
-            cardsSelected = []
+        if (keyCode === ENTER) {
+            if (keyIsDown(CONTROL)) {
+                displayState = "SEARCH"
+                justEnteredSearch = true
+                cardsSelected = []
+            } else {
+                cardsSelected = [cardsSelected[(option + cardsSelected.length * 10000) % cardsSelected.length]]
+            }
+        }
+        if (keyCode === UP_ARROW) {
+            option -= 1
+        }
+        if (keyCode === DOWN_ARROW) {
+            option += 1
         }
     }
     if (displayState === "SEARCH") {
@@ -579,7 +697,7 @@ function keyPressed() {
             if (keyIsDown(CONTROL)) {
                 if (!justEnteredSearch) {
                     displayState = "STATS"
-                    heightNeeded = 100000000000000000000000000000000000
+                    heightNeeded = 0
                 }
             }
             else {
