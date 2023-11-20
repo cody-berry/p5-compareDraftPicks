@@ -460,6 +460,25 @@ function draw() {
                 line(xPos, 40, xPos, height - 65)
                 xPos += 50
             }
+
+            // display the samples
+            let samplesOH = cardStats["# OH"]
+            let samplesGIH = cardStats["# GIH"]
+
+            noStroke()
+            fill(0, 0, 100)
+            textSize(20)
+            text((samplesOH > 100000) ? (round(samplesOH/10)/100000 + "M") : (round(samplesOH/10)/100 + "K"), startOfOH + 60, 50)
+            text((samplesGIH > 100000) ? (round(samplesGIH/10)/100000 + "M") : (round(samplesGIH/10)/100 + "K"), startOfGIH + 60, 50)
+
+            // display the winrate
+            stroke(0, 0, 100)
+            strokeWeight(5)
+            let winrateOH = cardStats["OH WR"]
+            let winrateGIH = cardStats["GIH WR"]
+            point(startOfOH + 210 + (winrateOH.substring(0, winrateOH.length - 1) - winrateTicksOH[0])*10, 65)
+            point(startOfGIH + 210 + (winrateGIH.substring(0, winrateGIH.length - 1) - winrateTicksGIH[0])*10, 65)
+
         } else {
             let ticksOH = findSampleTicks(maxSamplesOH)
             let ticksGIH = findSampleTicks(maxSamplesGIH)
