@@ -304,8 +304,8 @@ function draw() {
             // find out ticks for OH WR and GIH WR, which means finding the
             // maximum OH WR and GIH WR values
             let startOfOH = 350
-            let startOfGIH = startOfOH + 250
-            let widthNeeded = startOfGIH + 250
+            let startOfGIH = startOfOH + 210
+            let widthNeeded = startOfGIH + 210
             let maxSamplesOH = 0
             let maxSamplesGIH = 0
             let maxWinrateOH = 0
@@ -331,6 +331,11 @@ function draw() {
                     colorPairsWithEnoughData.push(colorPair)
                 }
             }
+            let cardStats = data[cardsSelected[0]]["all"]
+            minWinrateOH = min(minWinrateOH, cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1))
+            maxWinrateOH = max(maxWinrateOH, cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1))
+            minWinrateGIH = min(minWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
+            maxWinrateGIH = max(maxWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
 
             // now for the ticks
             let ticksOH = findSampleTicks(maxSamplesOH)
@@ -379,54 +384,13 @@ function draw() {
             let imageToDisplay = images[cardsSelected[0]]
             image(imageToDisplay, 0, 60, 308, 429)
 
-            // display the OH grade
+            // display the OH and GIH grades
             fill(0, 0, 50)
             noStroke()
             rect(startOfOH, 50, 50, 50, 5)
 
-            // display the ticks
-            fill(0, 0, 50)
-            textSize(12)
-            text(zeroTickOH, startOfOH + 52, 65)
-            text(oneTickOH, startOfOH + 102, 65)
-            text(twoTickOH, startOfOH + 152, 65)
 
-            text(zeroTickGIH, startOfGIH + 52, 65)
-            text(oneTickGIH, startOfGIH + 102, 65)
-            text(twoTickGIH, startOfGIH + 152, 65)
-
-            stroke(0, 0, 50)
-            strokeWeight(1)
-
-            // display the lines under the ticks to help users tell how
-            // many samples there are for a card
-            line(startOfOH + 60, 85, startOfOH + 60, height - 65)
-            line(startOfOH + 110, 85, startOfOH + 110, height - 65)
-            line(startOfOH + 160, 85, startOfOH + 160, height - 65)
-            line(startOfGIH + 60, 85, startOfGIH + 60, height - 65)
-            line(startOfGIH + 110, 85, startOfGIH + 110, height - 65)
-            line(startOfGIH + 160, 85, startOfGIH + 160, height - 65)
-
-            // now display the winrate ticks
-            let xPos = startOfOH + 200
-            for (let winrateTick of winrateTicksOH) {
-                noStroke()
-                text(winrateTick + "%", xPos - 8, 65)
-                stroke(0, 0, 50)
-                line(xPos, 85, xPos, height - 65)
-                xPos += 50
-            }
-            xPos = startOfGIH + 200
-            for (let winrateTick of winrateTicksGIH) {
-                noStroke()
-                text(winrateTick + "%", xPos - 8, 65)
-                stroke(0, 0, 50)
-                line(xPos, 85, xPos, height - 65)
-                xPos += 50
-            }
-
-
-            let cardStats = data[cardsSelected[0]]["all"]
+            cardStats = data[cardsSelected[0]]["all"]
             let grade = calculateGrade(cardStats["zScoreOH"])
             fill(gradeColors[grade][0],
                 gradeColors[grade][1],
@@ -438,6 +402,64 @@ function draw() {
             textSize(25)
             textAlign(CENTER, CENTER)
             text(grade, startOfOH + 25, 72)
+
+
+            fill(0, 0, 50)
+            noStroke()
+            rect(startOfGIH, 50, 50, 50, 5)
+
+
+            grade = calculateGrade(cardStats["zScoreGIH"])
+            fill(gradeColors[grade][0],
+                gradeColors[grade][1],
+                gradeColors[grade][2])
+            stroke(gradeColors[grade][0],
+                gradeColors[grade][1],
+                gradeColors[grade][2])
+            text(grade, startOfGIH + 25, 72)
+
+            // display the ticks
+            fill(0, 0, 50)
+            textSize(12)
+            noStroke()
+            textAlign(LEFT, TOP)
+            text(zeroTickOH, startOfOH + 52, 20)
+            text(oneTickOH, startOfOH + 102, 20)
+            text(twoTickOH, startOfOH + 152, 20)
+
+            text(zeroTickGIH, startOfGIH + 52, 20)
+            text(oneTickGIH, startOfGIH + 102, 20)
+            text(twoTickGIH, startOfGIH + 152, 20)
+
+            stroke(0, 0, 50)
+            strokeWeight(1)
+
+            // display the lines under the ticks to help users tell how
+            // many samples there are for a card
+            line(startOfOH + 60, 40, startOfOH + 60, height - 65)
+            line(startOfOH + 110, 40, startOfOH + 110, height - 65)
+            line(startOfOH + 160, 40, startOfOH + 160, height - 65)
+            line(startOfGIH + 60, 40, startOfGIH + 60, height - 65)
+            line(startOfGIH + 110, 40, startOfGIH + 110, height - 65)
+            line(startOfGIH + 160, 40, startOfGIH + 160, height - 65)
+
+            // now display the winrate ticks
+            let xPos = startOfOH + 210
+            for (let winrateTick of winrateTicksOH) {
+                noStroke()
+                text(winrateTick + "%", xPos - 8, 20)
+                stroke(0, 0, 50)
+                line(xPos, 40, xPos, height - 65)
+                xPos += 50
+            }
+            xPos = startOfGIH + 210
+            for (let winrateTick of winrateTicksGIH) {
+                noStroke()
+                text(winrateTick + "%", xPos - 8, 20)
+                stroke(0, 0, 50)
+                line(xPos, 40, xPos, height - 65)
+                xPos += 50
+            }
         } else {
             let ticksOH = findSampleTicks(maxSamplesOH)
             let ticksGIH = findSampleTicks(maxSamplesGIH)
