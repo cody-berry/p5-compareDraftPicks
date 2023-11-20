@@ -463,7 +463,7 @@ function draw() {
 
             // display the samples
             let samplesOH = cardStats["# OH"]
-            let samplesGIH = cardStats["# GIH"]
+            let samplesGIH = cardStats["# GD"]
 
             noStroke()
             fill(0, 0, 100)
@@ -476,8 +476,71 @@ function draw() {
             strokeWeight(5)
             let winrateOH = cardStats["OH WR"]
             let winrateGIH = cardStats["GIH WR"]
-            point(startOfOH + 210 + (winrateOH.substring(0, winrateOH.length - 1) - winrateTicksOH[0])*10, 65)
-            point(startOfGIH + 210 + (winrateGIH.substring(0, winrateGIH.length - 1) - winrateTicksGIH[0])*10, 65)
+            point(startOfOH + 210 + (winrateOH.substring(0, winrateOH.length - 1) - winrateTicksOH[0])*10, 75)
+            point(startOfGIH + 210 + (winrateGIH.substring(0, winrateGIH.length - 1) - winrateTicksGIH[0])*10, 75)
+
+            // repeat for all available color pairs
+            let yPos = 135
+            for (let colorPair of colorPairsWithEnoughData) {
+                // display the calibre
+                fill(0, 0, 100)
+                noStroke()
+                textSize(10)
+                textAlign(CENTER, CENTER)
+                text(colorPair, startOfOH - 10, yPos)
+
+                // display the OH and GIH grades
+                fill(0, 0, 50)
+                rect(startOfOH, yPos - 25, 50, 50, 5)
+
+
+                cardStats = data[cardsSelected[0]][colorPair]
+                let grade = calculateGrade(cardStats["zScoreOH"])
+                fill(gradeColors[grade][0],
+                    gradeColors[grade][1],
+                    gradeColors[grade][2])
+                stroke(gradeColors[grade][0],
+                    gradeColors[grade][1],
+                    gradeColors[grade][2])
+                strokeWeight(2)
+                textSize(25)
+                textAlign(CENTER, CENTER)
+                text(grade, startOfOH + 25, yPos - 3)
+
+
+                fill(0, 0, 50)
+                noStroke()
+                rect(startOfGIH, yPos - 25, 50, 50, 5)
+
+
+                grade = calculateGrade(cardStats["zScoreGIH"])
+                fill(gradeColors[grade][0],
+                    gradeColors[grade][1],
+                    gradeColors[grade][2])
+                stroke(gradeColors[grade][0],
+                    gradeColors[grade][1],
+                    gradeColors[grade][2])
+                text(grade, startOfGIH + 25, yPos - 3)
+
+                // display the samples
+                let samplesOH = cardStats["# OH"]
+                let samplesGIH = cardStats["# GD"]
+
+                noStroke()
+                fill(0, 0, 100)
+                rect(startOfOH + 60, yPos - 4, (samplesOH/oneTickNumOH)*50, 8, 0, 4, 4, 0)
+                rect(startOfGIH + 60, yPos - 4, (samplesGIH/oneTickNumGIH)*50, 8, 0, 4, 4, 0)
+
+                // display the winrate
+                stroke(0, 0, 100)
+                strokeWeight(5)
+                let winrateOH = cardStats["OH WR"]
+                let winrateGIH = cardStats["GIH WR"]
+                point(startOfOH + 210 + (winrateOH.substring(0, winrateOH.length - 1) - winrateTicksOH[0])*10, yPos)
+                point(startOfGIH + 210 + (winrateGIH.substring(0, winrateGIH.length - 1) - winrateTicksGIH[0])*10, yPos)
+
+                yPos += 60
+            }
 
         } else {
             let ticksOH = findSampleTicks(maxSamplesOH)
