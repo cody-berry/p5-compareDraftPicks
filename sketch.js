@@ -24,12 +24,20 @@ let displayState = "SEARCH"
 let gradeColors
 
 let images
+let WUBRG
 
 function preload() {
     font = loadFont('data/meiryo.ttf')
     fixedWidthFont = loadFont('data/consola.ttf')
     variableWidthFont = loadFont('data/meiryo.ttf')
     data = loadJSON("json/master.json", loadImages)
+    WUBRG = {
+        "W": loadImage("WUBRG/W.png"),
+        "U": loadImage("WUBRG/U.png"),
+        "B": loadImage("WUBRG/B.png"),
+        "R": loadImage("WUBRG/R.png"),
+        "G": loadImage("WUBRG/G.png")
+    }
 }
 
 function loadImages(data) {
@@ -303,7 +311,7 @@ function draw() {
         } else if (cardsSelected.length === 1) { // special case: diplay color pairs
             // find out ticks for OH WR and GIH WR, which means finding the
             // maximum OH WR and GIH WR values
-            let startOfOH = 350
+            let startOfOH = 360
             let startOfGIH = startOfOH + 210
             let widthNeeded = startOfGIH + 210
             let maxSamplesOH = 0
@@ -483,13 +491,17 @@ function draw() {
             let yPos = 135
             for (let colorPair of colorPairsWithEnoughData) {
                 // display the calibre
-                fill(0, 0, 100)
-                noStroke()
-                textSize(10)
-                textAlign(CENTER, CENTER)
-                text(colorPair, startOfOH - 10, yPos)
+                xPos = startOfOH - 55*3/4
+                for (let letter of colorPair) {
+                    imageMode(CENTER)
+                    image(WUBRG[letter], xPos, yPos, 30, 30)
+                    imageMode(CORNER)
+
+                    xPos += 55/2
+                }
 
                 // display the OH and GIH grades
+                noStroke()
                 fill(0, 0, 50)
                 rect(startOfOH, yPos - 25, 50, 50, 5)
 
