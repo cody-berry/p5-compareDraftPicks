@@ -12,25 +12,29 @@ let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 
 let data
+let winrateStatistics
 let cardNames
+
 let searchBox = ""
 let option
-
 let cardsSelected = []
 let addSelectedOptionToCards = false
-let heightNeeded = 0
 
-let displayState = "SEARCH"
+let heightNeeded = 0
 let gradeColors
 
 let images
 let WUBRG
+
+let displayState = "SEARCH"
+
 
 function preload() {
     font = loadFont('data/meiryo.ttf')
     fixedWidthFont = loadFont('data/consola.ttf')
     variableWidthFont = loadFont('data/meiryo.ttf')
     data = loadJSON("json/master.json", loadImages)
+    winrateStatistics = loadJSON("json/statistics.json")
     WUBRG = {
         "W": loadImage("WUBRG/W.png"),
         "U": loadImage("WUBRG/U.png"),
@@ -336,6 +340,11 @@ function draw() {
                     minWinrateGIH = min(minWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
                     maxWinrateGIH = max(maxWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
 
+                    minWinrateOH = min(minWinrateOH, winrateStatistics[colorPair]["OH WR"]["μ"])
+                    maxWinrateOH = max(maxWinrateOH, winrateStatistics[colorPair]["OH WR"]["μ"])
+                    minWinrateGIH = min(minWinrateGIH, winrateStatistics[colorPair]["GIH WR"]["μ"])
+                    maxWinrateGIH = max(maxWinrateGIH, winrateStatistics[colorPair]["GIH WR"]["μ"])
+
                     colorPairsWithEnoughData.push(colorPair)
                 }
             }
@@ -344,6 +353,11 @@ function draw() {
             maxWinrateOH = max(maxWinrateOH, cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1))
             minWinrateGIH = min(minWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
             maxWinrateGIH = max(maxWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
+
+            minWinrateOH = min(minWinrateOH, winrateStatistics["all"]["OH WR"]["μ"])
+            maxWinrateOH = max(maxWinrateOH, winrateStatistics["all"]["OH WR"]["μ"])
+            minWinrateGIH = min(minWinrateGIH, winrateStatistics["all"]["GIH WR"]["μ"])
+            maxWinrateGIH = max(maxWinrateGIH, winrateStatistics["all"]["GIH WR"]["μ"])
 
             // now for the ticks
             let ticksOH = findSampleTicks(maxSamplesOH)
@@ -364,14 +378,14 @@ function draw() {
             let winrateTicksOH = []
             // iterate through every tick needed (increments of 5)
             for (let i = 0; i < 100; i += 5) {
-                if (i - 5 < maxWinrateOH &&
-                    i + 5 > minWinrateOH) {
+                if (i - 3 < maxWinrateOH &&
+                    i + 3 > minWinrateOH) {
                     winrateTicksOH.push(i)
                     startOfGIH += 50
                     widthNeeded += 50
                 }
-                if (i - 5 < maxWinrateGIH &&
-                    i + 5 > minWinrateGIH) {
+                if (i - 3 < maxWinrateGIH &&
+                    i + 3 > minWinrateGIH) {
                     winrateTicksGIH.push(i)
                     widthNeeded += 50
                 }
@@ -480,12 +494,26 @@ function draw() {
             text((samplesGIH > 100000) ? (round(samplesGIH/10)/100000 + "M") : (round(samplesGIH/10)/100 + "K"), startOfGIH + 60, 50)
 
             // display the winrate
+            let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
+            let winrateGIH = cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1)
+            let meanOH = winrateStatistics["all"]["OH WR"]["μ"]
+            let meanGIH = winrateStatistics["all"]["GIH WR"]["μ"]
+            stroke(0, 0, 50)
+            strokeWeight(3)
+            line(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, 75,
+                startOfOH + 210 + (winrateOH - winrateTicksOH[0])*10, 75)
+            line(startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10, 75,
+                startOfGIH + 210 + (winrateGIH - winrateTicksGIH[0])*10, 75)
+
             stroke(0, 0, 100)
             strokeWeight(5)
-            let winrateOH = cardStats["OH WR"]
-            let winrateGIH = cardStats["GIH WR"]
-            point(startOfOH + 210 + (winrateOH.substring(0, winrateOH.length - 1) - winrateTicksOH[0])*10, 75)
-            point(startOfGIH + 210 + (winrateGIH.substring(0, winrateGIH.length - 1) - winrateTicksGIH[0])*10, 75)
+            point(startOfOH + 210 + (winrateOH - winrateTicksOH[0])*10, 75)
+            point(startOfGIH + 210 + (winrateGIH - winrateTicksGIH[0])*10, 75)
+
+            stroke(0, 0, 75)
+            strokeWeight(4)
+            point(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, 75)
+            point(startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10, 75)
 
             // repeat for all available color pairs
             let yPos = 135
@@ -546,10 +574,26 @@ function draw() {
                 // display the winrate
                 stroke(0, 0, 100)
                 strokeWeight(5)
-                let winrateOH = cardStats["OH WR"]
-                let winrateGIH = cardStats["GIH WR"]
-                point(startOfOH + 210 + (winrateOH.substring(0, winrateOH.length - 1) - winrateTicksOH[0])*10, yPos)
-                point(startOfGIH + 210 + (winrateGIH.substring(0, winrateGIH.length - 1) - winrateTicksGIH[0])*10, yPos)
+                let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
+                let winrateGIH = cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1)
+                let meanOH = winrateStatistics[colorPair]["OH WR"]["μ"]
+                let meanGIH = winrateStatistics[colorPair]["GIH WR"]["μ"]
+                stroke(0, 0, 50)
+                strokeWeight(3)
+                line(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, yPos,
+                    startOfOH + 210 + (winrateOH - winrateTicksOH[0])*10, yPos)
+                line(startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10, yPos,
+                    startOfGIH + 210 + (winrateGIH - winrateTicksGIH[0])*10, yPos)
+
+                stroke(0, 0, 100)
+                strokeWeight(5)
+                point(startOfOH + 210 + (winrateOH - winrateTicksOH[0])*10, yPos)
+                point(startOfGIH + 210 + (winrateGIH - winrateTicksGIH[0])*10, yPos)
+
+                stroke(0, 0, 75)
+                strokeWeight(4)
+                point(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, yPos)
+                point(startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10, yPos)
 
                 yPos += 60
             }
