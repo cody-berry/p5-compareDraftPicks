@@ -617,14 +617,14 @@ function draw() {
             let winrateTicksOH = []
             // iterate through every tick needed (increments of 5)
             for (let i = 0; i < 100; i += 5) {
-                if (i - 5 < maxWinrateOH &&
-                    i + 5 > minWinrateOH) {
+                if (i - 3 < maxWinrateOH &&
+                    i + 3 > minWinrateOH) {
                     winrateTicksOH.push(i)
                     startOfGIH += 50
                     widthNeeded += 50
                 }
-                if (i - 5 < maxWinrateGIH &&
-                    i + 5 > minWinrateGIH) {
+                if (i - 3 < maxWinrateGIH &&
+                    i + 3 > minWinrateGIH) {
                     winrateTicksGIH.push(i)
                     widthNeeded += 50
                 }
@@ -733,11 +733,6 @@ function draw() {
                 fill(0, 0, 100)
                 rect(startOfOH + 50, yPos - 4, (cardStats["# OH"] / oneTickNumOH) * 50, 8, 0, 4, 4, 0)
 
-                // display the point for the winrate
-                stroke(0, 0, 100)
-                strokeWeight(5)
-                point(startOfOH + 200 + (cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1) - winrateTicksOH[0])*10, yPos)
-
                 // GIH
                 grade = calculateGrade(cardStats["zScoreGIH"])
                 fill(gradeColors[grade][0],
@@ -755,9 +750,26 @@ function draw() {
                 rect(startOfGIH + 50, yPos - 4, (cardStats["# GD"] / oneTickNumGIH) * 50, 8, 0, 4, 4, 0)
 
                 // display the point for the winrate
+                let winrateGIH = cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1)
+                let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
+                let meanGIH = winrateStatistics["all"]["GIH WR"]["μ"]
+                let meanOH = winrateStatistics["all"]["OH WR"]["μ"]
+                stroke(0, 0, 50)
+                strokeWeight(3)
+                line(startOfGIH + 200 + (winrateGIH - winrateTicksGIH[0])*10, yPos,
+                    startOfGIH + 200 + (meanGIH - winrateTicksGIH[0])*10, yPos)
+                line(startOfOH + 200 + (winrateOH - winrateTicksGIH[0])*10, yPos,
+                    startOfOH + 200 + (meanOH - winrateTicksOH[0])*10, yPos)
+
                 stroke(0, 0, 100)
                 strokeWeight(5)
-                point(startOfGIH + 200 + (cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1) - winrateTicksGIH[0])*10, yPos)
+                point(startOfGIH + 200 + (winrateGIH - winrateTicksGIH[0])*10, yPos)
+                point(startOfOH + 200 + (winrateOH - winrateTicksOH[0])*10, yPos)
+
+                stroke(0, 0, 75)
+                strokeWeight(4)
+                point(startOfGIH + 200 + (meanGIH - winrateTicksGIH[0])*10, yPos)
+                point(startOfOH + 200 + (meanOH - winrateTicksOH[0])*10, yPos)
 
                 noStroke()
 
