@@ -519,7 +519,7 @@ function draw() {
             let yPos = 135
             for (let colorPair of colorPairsWithEnoughData) {
                 // display the calibre
-                xPos = startOfOH - 55*3/4
+                xPos = startOfOH - 55*3/4 - 2
                 for (let letter of colorPair) {
                     imageMode(CENTER)
                     image(WUBRG[letter], xPos, yPos, 30, 30)
