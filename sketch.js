@@ -299,6 +299,10 @@ function draw() {
                 cardsWithEnoughData.push(cardName)
             }
         }
+        minWinrateOH = parseInt(min(minWinrateOH, round(winrateStatistics["all"]["OH WR"]["μ"]*10)/10))
+        maxWinrateOH = parseInt(max(maxWinrateOH, round(winrateStatistics["all"]["OH WR"]["μ"]*10)/10))
+        minWinrateGIH = parseInt(min(minWinrateGIH, round(winrateStatistics["all"]["GIH WR"]["μ"]*10)/10))
+        maxWinrateGIH = parseInt(max(maxWinrateGIH, round(winrateStatistics["all"]["GIH WR"]["μ"]*10)/10))
         cardsSelected = cardsWithEnoughData
         // make sure there are actually cards with enough data!
         if (cardsSelected.length === 0) {
@@ -620,19 +624,15 @@ function draw() {
             // find the winrate ticks
             let winrateTicksGIH = []
             let winrateTicksOH = []
-            // iterate through every tick needed (increments of 5)
-            for (let i = 0; i < 100; i += 5) {
-                if (i - 3 < maxWinrateOH &&
-                    i + 3 > minWinrateOH) {
-                    winrateTicksOH.push(i)
-                    startOfGIH += 50
-                    widthNeeded += 50
-                }
-                if (i - 3 < maxWinrateGIH &&
-                    i + 3 > minWinrateGIH) {
-                    winrateTicksGIH.push(i)
-                    widthNeeded += 50
-                }
+            // iterate through every tick needed for OH and GIH (increments of 5)
+            for (let i = minWinrateOH - (maxWinrateOH - minWinrateOH)/10; i < maxWinrateOH + (maxWinrateOH - minWinrateOH)/4; i += 5) {
+                winrateTicksOH.push(Math.round(i))
+                startOfGIH += 50
+                widthNeeded += 50
+            }
+            for (let i = minWinrateGIH - (maxWinrateGIH - minWinrateGIH)/10; i < maxWinrateGIH + (maxWinrateGIH - minWinrateGIH)/4; i += 5) {
+                winrateTicksGIH.push(Math.round(i))
+                widthNeeded += 50
             }
 
             // now actually display the headers and ticks
@@ -763,7 +763,7 @@ function draw() {
                 strokeWeight(3)
                 line(startOfGIH + 200 + (winrateGIH - winrateTicksGIH[0])*10, yPos,
                     startOfGIH + 200 + (meanGIH - winrateTicksGIH[0])*10, yPos)
-                line(startOfOH + 200 + (winrateOH - winrateTicksGIH[0])*10, yPos,
+                line(startOfOH + 200 + (winrateOH - winrateTicksOH[0])*10, yPos,
                     startOfOH + 200 + (meanOH - winrateTicksOH[0])*10, yPos)
 
                 stroke(0, 0, 100)
