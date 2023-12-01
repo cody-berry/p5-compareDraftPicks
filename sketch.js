@@ -315,6 +315,7 @@ function draw() {
         } else if (cardsSelected.length === 1) { // special case: diplay color pairs
             // find out ticks for OH WR and GIH WR, which means finding the
             // maximum OH WR and GIH WR values
+            let startingYPos = height/2 - 70
             let startOfOH = 360
             let startOfGIH = startOfOH + 210
             let widthNeeded = startOfGIH + 210
@@ -340,12 +341,14 @@ function draw() {
                     minWinrateGIH = min(minWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
                     maxWinrateGIH = max(maxWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
 
-                    minWinrateOH = min(minWinrateOH, winrateStatistics[colorPair]["OH WR"]["μ"])
-                    maxWinrateOH = max(maxWinrateOH, winrateStatistics[colorPair]["OH WR"]["μ"])
-                    minWinrateGIH = min(minWinrateGIH, winrateStatistics[colorPair]["GIH WR"]["μ"])
-                    maxWinrateGIH = max(maxWinrateGIH, winrateStatistics[colorPair]["GIH WR"]["μ"])
+                    minWinrateOH = min(minWinrateOH, round(winrateStatistics[colorPair]["OH WR"]["μ"]*10)/10)
+                    maxWinrateOH = max(maxWinrateOH, round(winrateStatistics[colorPair]["OH WR"]["μ"]*10)/10)
+                    minWinrateGIH = min(minWinrateGIH, round(winrateStatistics[colorPair]["GIH WR"]["μ"*10]/10))
+                    maxWinrateGIH = max(maxWinrateGIH, round(winrateStatistics[colorPair]["GIH WR"]["μ"*10]/10))
 
                     colorPairsWithEnoughData.push(colorPair)
+
+                    startingYPos -= 30
                 }
             }
             let cardStats = data[cardsSelected[0]]["all"]
@@ -354,10 +357,10 @@ function draw() {
             minWinrateGIH = min(minWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
             maxWinrateGIH = max(maxWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
 
-            minWinrateOH = min(minWinrateOH, winrateStatistics["all"]["OH WR"]["μ"])
-            maxWinrateOH = max(maxWinrateOH, winrateStatistics["all"]["OH WR"]["μ"])
-            minWinrateGIH = min(minWinrateGIH, winrateStatistics["all"]["GIH WR"]["μ"])
-            maxWinrateGIH = max(maxWinrateGIH, winrateStatistics["all"]["GIH WR"]["μ"])
+            minWinrateOH = parseInt(min(minWinrateOH, round(winrateStatistics["all"]["OH WR"]["μ"]*10)/10))
+            maxWinrateOH = parseInt(max(maxWinrateOH, round(winrateStatistics["all"]["OH WR"]["μ"]*10)/10))
+            minWinrateGIH = parseInt(min(minWinrateGIH, round(winrateStatistics["all"]["GIH WR"]["μ"]*10)/10))
+            maxWinrateGIH = parseInt(max(maxWinrateGIH, round(winrateStatistics["all"]["GIH WR"]["μ"]*10)/10))
 
             // now for the ticks
             let ticksOH = findSampleTicks(maxSamplesOH)
@@ -376,19 +379,22 @@ function draw() {
             // find the winrate ticks
             let winrateTicksGIH = []
             let winrateTicksOH = []
-            // iterate through every tick needed (increments of 5)
-            for (let i = 0; i < 100; i += 5) {
-                if (i - 3 < maxWinrateOH &&
-                    i + 3 > minWinrateOH) {
-                    winrateTicksOH.push(i)
-                    startOfGIH += 50
-                    widthNeeded += 50
-                }
-                if (i - 3 < maxWinrateGIH &&
-                    i + 3 > minWinrateGIH) {
-                    winrateTicksGIH.push(i)
-                    widthNeeded += 50
-                }
+
+            if (frameCount % 30 === 0) {
+                print(minWinrateOH, maxWinrateOH, minWinrateGIH, maxWinrateGIH)
+                print(minWinrateOH - (maxWinrateOH - minWinrateOH)/10, maxWinrateOH + (maxWinrateOH - minWinrateOH)/4,
+                      minWinrateGIH - (maxWinrateGIH - minWinrateGIH)/10, maxWinrateGIH + (maxWinrateGIH - minWinrateGIH)/4)
+            }
+
+            // iterate through every tick needed for OH and GIH (increments of 5)
+            for (let i = minWinrateOH - (maxWinrateOH - minWinrateOH)/10; i < maxWinrateOH + (maxWinrateOH - minWinrateOH)/4; i += 5) {
+                winrateTicksOH.push(Math.round(i))
+                startOfGIH += 50
+                widthNeeded += 50
+            }
+            for (let i = minWinrateGIH - (maxWinrateGIH - minWinrateGIH)/10; i < maxWinrateGIH + (maxWinrateGIH - minWinrateGIH)/4; i += 5) {
+                winrateTicksGIH.push(Math.round(i))
+                widthNeeded += 50
             }
 
             // now actually display the screen
@@ -409,8 +415,7 @@ function draw() {
             // display the OH and GIH grades
             fill(0, 0, 50)
             noStroke()
-            rect(startOfOH, 50, 50, 50, 5)
-
+            rect(startOfOH, startingYPos + 30, 50, 50, 5)
 
             cardStats = data[cardsSelected[0]]["all"]
             let grade = calculateGrade(cardStats["zScoreOH"])
@@ -423,12 +428,12 @@ function draw() {
             strokeWeight(2)
             textSize(25)
             textAlign(CENTER, CENTER)
-            text(grade, startOfOH + 25, 72)
+            text(grade, startOfOH + 25, startingYPos + 52)
 
 
             fill(0, 0, 50)
             noStroke()
-            rect(startOfGIH, 50, 50, 50, 5)
+            rect(startOfGIH, startingYPos + 30, 50, 50, 5)
 
 
             grade = calculateGrade(cardStats["zScoreGIH"])
@@ -438,48 +443,48 @@ function draw() {
             stroke(gradeColors[grade][0],
                 gradeColors[grade][1],
                 gradeColors[grade][2])
-            text(grade, startOfGIH + 25, 72)
+            text(grade, startOfGIH + 25, startingYPos + 52)
 
             // display the ticks
             fill(0, 0, 50)
             textSize(12)
             noStroke()
             textAlign(LEFT, TOP)
-            text(zeroTickOH, startOfOH + 52, 20)
-            text(oneTickOH, startOfOH + 102, 20)
-            text(twoTickOH, startOfOH + 152, 20)
+            text(zeroTickOH, startOfOH + 52, startingYPos)
+            text(oneTickOH, startOfOH + 102, startingYPos)
+            text(twoTickOH, startOfOH + 152, startingYPos)
 
-            text(zeroTickGIH, startOfGIH + 52, 20)
-            text(oneTickGIH, startOfGIH + 102, 20)
-            text(twoTickGIH, startOfGIH + 152, 20)
+            text(zeroTickGIH, startOfGIH + 52, startingYPos)
+            text(oneTickGIH, startOfGIH + 102, startingYPos)
+            text(twoTickGIH, startOfGIH + 152, startingYPos)
 
             stroke(0, 0, 50)
             strokeWeight(1)
 
             // display the lines under the ticks to help users tell how
             // many samples there are for a card
-            line(startOfOH + 60, 40, startOfOH + 60, height - 65)
-            line(startOfOH + 110, 40, startOfOH + 110, height - 65)
-            line(startOfOH + 160, 40, startOfOH + 160, height - 65)
-            line(startOfGIH + 60, 40, startOfGIH + 60, height - 65)
-            line(startOfGIH + 110, 40, startOfGIH + 110, height - 65)
-            line(startOfGIH + 160, 40, startOfGIH + 160, height - 65)
+            line(startOfOH + 60, startingYPos + 20, startOfOH + 60, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+            line(startOfOH + 110, startingYPos + 20, startOfOH + 110, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+            line(startOfOH + 160, startingYPos + 20, startOfOH + 160, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+            line(startOfGIH + 60, startingYPos + 20, startOfGIH + 60, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+            line(startOfGIH + 110, startingYPos + 20, startOfGIH + 110, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+            line(startOfGIH + 160, startingYPos + 20, startOfGIH + 160, 115 + startingYPos + colorPairsWithEnoughData.length*60)
 
             // now display the winrate ticks
             let xPos = startOfOH + 210
             for (let winrateTick of winrateTicksOH) {
                 noStroke()
-                text(winrateTick + "%", xPos - 8, 20)
+                text(winrateTick + "%", xPos - 8, startingYPos)
                 stroke(0, 0, 50)
-                line(xPos, 40, xPos, height - 65)
+                line(xPos, startingYPos + 20, xPos, 115 + startingYPos + colorPairsWithEnoughData.length*60)
                 xPos += 50
             }
             xPos = startOfGIH + 210
             for (let winrateTick of winrateTicksGIH) {
                 noStroke()
-                text(winrateTick + "%", xPos - 8, 20)
+                text(winrateTick + "%", xPos - 8, startingYPos)
                 stroke(0, 0, 50)
-                line(xPos, 40, xPos, height - 65)
+                line(xPos, startingYPos + 20, xPos, 115 + startingYPos + colorPairsWithEnoughData.length*60)
                 xPos += 50
             }
 
@@ -490,8 +495,8 @@ function draw() {
             noStroke()
             fill(0, 0, 100)
             textSize(20)
-            text((samplesOH > 100000) ? (round(samplesOH/10)/100000 + "M") : (round(samplesOH/10)/100 + "K"), startOfOH + 60, 50)
-            text((samplesGIH > 100000) ? (round(samplesGIH/10)/100000 + "M") : (round(samplesGIH/10)/100 + "K"), startOfGIH + 60, 50)
+            text((samplesOH > 100000) ? (round(samplesOH/10)/100000 + "M") : (round(samplesOH/10)/100 + "K"), startOfOH + 60, startingYPos + 52)
+            text((samplesGIH > 100000) ? (round(samplesGIH/10)/100000 + "M") : (round(samplesGIH/10)/100 + "K"), startOfGIH + 60, startingYPos + 52)
 
             // display the winrate
             let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
@@ -500,23 +505,23 @@ function draw() {
             let meanGIH = winrateStatistics["all"]["GIH WR"]["μ"]
             stroke(0, 0, 50)
             strokeWeight(3)
-            line(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, 75,
-                startOfOH + 210 + (winrateOH - winrateTicksOH[0])*10, 75)
-            line(startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10, 75,
-                startOfGIH + 210 + (winrateGIH - winrateTicksGIH[0])*10, 75)
+            line(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, startingYPos + 55,
+                startOfOH + 210 + (winrateOH - winrateTicksOH[0])*10, startingYPos + 55)
+            line(startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10, startingYPos + 55,
+                startOfGIH + 210 + (winrateGIH - winrateTicksGIH[0])*10, startingYPos + 55)
 
             stroke(0, 0, 100)
             strokeWeight(5)
-            point(startOfOH + 210 + (winrateOH - winrateTicksOH[0])*10, 75)
-            point(startOfGIH + 210 + (winrateGIH - winrateTicksGIH[0])*10, 75)
+            point(startOfOH + 210 + (winrateOH - winrateTicksOH[0])*10, startingYPos + 55)
+            point(startOfGIH + 210 + (winrateGIH - winrateTicksGIH[0])*10, startingYPos + 55)
 
             stroke(0, 0, 75)
             strokeWeight(4)
-            point(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, 75)
-            point(startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10, 75)
+            point(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, startingYPos + 55)
+            point(startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10, startingYPos + 55)
 
             // repeat for all available color pairs
-            let yPos = 135
+            let yPos = startingYPos + 115
             for (let colorPair of colorPairsWithEnoughData) {
                 // display the calibre
                 xPos = startOfOH - 55*3/4 - 2
