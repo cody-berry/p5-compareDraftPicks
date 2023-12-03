@@ -130,6 +130,186 @@ function setup() {
 
 }
 
+function drawTextBox() {
+    rectMode(CORNER)
+    textSize(15)
+    noFill()
+    stroke(0, 0, 50)
+    strokeWeight(1)
+    rect(5, 100, 490, 30)
+    stroke(0, 0, 100)
+    strokeWeight(1)
+    if (frameCount % 60 <= 30) {
+        line(textWidth(searchBox) + 12, 105, textWidth(searchBox) + 12, 125)
+    }
+
+    // text in text box
+    noStroke()
+    fill(0, 0, 100)
+    textAlign(LEFT, CENTER)
+    text(searchBox, 10, 115)
+
+    // get matches
+    fill(0, 0, 50)
+    let matchedNames = []
+    let yPos = 150
+    if (searchBox) {
+        // first matches are ones where the first match is at the beginning
+        let i = 0
+        while (i < 20) {
+            for (let cardName of cardNames) {
+                // make sure there's no repeats!
+                if (!matchedNames.includes(cardName) && cardName.toLowerCase().substring(i, i + searchBox.length) === searchBox.toLowerCase()) {
+                    // limit is 9
+                    if (matchedNames.length < 9) {
+                        matchedNames.push(cardName)
+                    }
+                }
+            }
+            i += 1
+        }
+    }
+
+    let i = 0
+    for (let cardName of matchedNames) {
+        i += 1
+
+        // display the alternating table color
+        fillAlternatingTableColor(i)
+
+        // if it is part of the cards list, make it green
+        if (cardsSelected.includes(cardName)) {
+            fill(120, 50, 50)
+        }
+
+        // if it is the selected option, make it orange
+        // "+ matchedNames.length*10000" ensures that negative options
+        // don't prompt no card display
+        if (i - 1 === (option + matchedNames.length * 10000) % matchedNames.length) {
+            fill(30, 100, 50)
+            if (cardsSelected.includes(cardName)) {
+                fill(52, 87, 50)
+            }
+        }
+
+        rect(0, yPos - 15, width, 30)
+
+        // display the card name
+        fill(0, 0, 100)
+        text(cardName, 10, yPos - 3)
+
+        // bold the first match. not all of them
+        stroke(0, 0, 100)
+        strokeWeight(1)
+        text(cardName.substring(cardName.toLowerCase().indexOf(searchBox.toLowerCase()),
+            cardName.toLowerCase().indexOf(searchBox.toLowerCase()) + searchBox.length),
+            10 + textWidth(cardName.substring(0, cardName.toLowerCase().indexOf(searchBox.toLowerCase()))), yPos - 3)
+        noStroke()
+        yPos += 30
+    }
+    // if there are no matches, say it
+    if (i === 0 && searchBox) {
+        text("No matches found", 10, 150)
+    }
+
+    // if there are matches and addSelectedOptionToCards is true...
+    if (matchedNames.length && addSelectedOptionToCards) {
+        // add the selected option to the card list
+        let cardName = matchedNames[(option + matchedNames.length * 10000) % matchedNames.length]
+        if (cardsSelected.indexOf(cardName) !== -1) {
+            cardsSelected.splice(cardsSelected.indexOf(cardName), 1)
+        } else {
+            cardsSelected.push(cardName)
+        }
+
+        print(cardsSelected)
+    }
+
+    // make sure that the option isn't added to the list the next time
+    addSelectedOptionToCards = false
+}
+
+// just fills a certain grey color according to the number of these drawn
+function fillAlternatingTableColor(i) {
+    fill(0, 0, 20 + 10 * (i % 2))
+}
+
+function noDataScreen() {
+    resizeCanvas(200, 150)
+    background(0, 0, 0)
+    fill(0, 0, 100)
+    noStroke()
+    textAlign(LEFT, TOP)
+    text("There are no cards that \nhave enough data.", 0, 0)
+    text("Please press Ctrl+Enter to \nreturn to searching.", 0, 50)
+    stroke(0, 0, 100)
+    strokeWeight(1)
+    text("Cards you selected will \nnot be saved.", 0, 100)
+}
+
+function findWinrateTicks(minWinrate, maxWinrate) {
+    // iterate through every tick needed for OH and GIH (increments of 5)
+    let winrateTicks = []
+    for (let i = minWinrate - (maxWinrate - minWinrate)/10; i < maxWinrate + (maxWinrate - minWinrate)/4; i += 5) {
+        winrateTicks.push(Math.round(i))
+    }
+    return winrateTicks
+}
+
+function displayTicks(zeroTickOH, oneTickOH, twoTickOH, zeroTickGIH, oneTickGIH, twoTickGIH, winrateTicksOH, winrateTicksGIH, startOfGIH, startOfOH, startingYPos, colorPairsWithEnoughData) {
+    // display the ticks
+    fill(0, 0, 50)
+    textSize(12)
+    noStroke()
+    textAlign(LEFT, TOP)
+    text(zeroTickOH, startOfOH + 52, startingYPos)
+    text(oneTickOH, startOfOH + 102, startingYPos)
+    text(twoTickOH, startOfOH + 152, startingYPos)
+
+    text(zeroTickGIH, startOfGIH + 52, startingYPos)
+    text(oneTickGIH, startOfGIH + 102, startingYPos)
+    text(twoTickGIH, startOfGIH + 152, startingYPos)
+
+    stroke(0, 0, 50)
+    strokeWeight(1)
+
+    // display the lines under the ticks to help users tell how
+    // many samples there are for a card
+    line(startOfOH + 60, startingYPos + 20, startOfOH + 60, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+    line(startOfOH + 110, startingYPos + 20, startOfOH + 110, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+    line(startOfOH + 160, startingYPos + 20, startOfOH + 160, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+    line(startOfGIH + 60, startingYPos + 20, startOfGIH + 60, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+    line(startOfGIH + 110, startingYPos + 20, startOfGIH + 110, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+    line(startOfGIH + 160, startingYPos + 20, startOfGIH + 160, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+
+    // now display the winrate ticks
+    let xPos = startOfOH + 210
+    for (let winrateTick of winrateTicksOH) {
+        noStroke()
+        text(winrateTick + "%", xPos - 8, startingYPos)
+        stroke(0, 0, 50)
+        line(xPos, startingYPos + 20, xPos, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+        xPos += 50
+    }
+    xPos = startOfGIH + 210
+    for (let winrateTick of winrateTicksGIH) {
+        noStroke()
+        text(winrateTick + "%", xPos - 8, startingYPos)
+        stroke(0, 0, 50)
+        line(xPos, startingYPos + 20, xPos, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+        xPos += 50
+    }
+}
+
+// I couldn't find a good name for this one. But essentially, what it's doing is
+// converting a number to 5K or 0.1M notation.
+function simplifyNum(num) {
+    // 100000 = 0.1M, which is the splitter for using 0.3M notation and using
+    // 5K notation.
+    // round(num/100)*100 rounds the number to the nearest hundreth. M means
+    // dividing by 1,000,000 and K means dividing by 1,000.
+    return (num > 100000) ? (round(num/100)*100/1000000 + "M") : (round(num/100)*100/1000 + "K");
+}
 
 function draw() {
     print(displayState)
@@ -145,102 +325,7 @@ function draw() {
         text("SEARCH", 0, 0)
 
         // text box
-        rectMode(CORNER)
-        textSize(15)
-        noFill()
-        stroke(0, 0, 50)
-        strokeWeight(1)
-        rect(5, 100, 490, 30)
-        stroke(0, 0, 100)
-        strokeWeight(1)
-        if (frameCount % 60 <= 30) {
-            line(textWidth(searchBox) + 12, 105, textWidth(searchBox) + 12, 125)
-        }
-
-        // text in text box
-        noStroke()
-        fill(0, 0, 100)
-        textAlign(LEFT, CENTER)
-        text(searchBox, 10, 115)
-
-        // get matches
-        fill(0, 0, 50)
-        let matchedNames = []
-        let yPos = 150
-        if (searchBox) {
-            // first matches are ones where the first match is at the beginning
-            let i = 0
-            while (i < 20) {
-                for (let cardName of cardNames) {
-                    // make sure there's no repeats!
-                    if (!matchedNames.includes(cardName) && cardName.toLowerCase().substring(i, i + searchBox.length) === searchBox.toLowerCase()) {
-                        // limit is 9
-                        if (matchedNames.length < 9) {
-                            matchedNames.push(cardName)
-                        }
-                    }
-                }
-                i += 1
-            }
-        }
-
-        let i = 0
-        for (let cardName of matchedNames) {
-            i += 1
-
-            // display the alternating table color
-            fill(0, 0, 20 + 10 * (i % 2))
-
-            // if it is part of the cards list, make it green
-            if (cardsSelected.includes(cardName)) {
-                fill(120, 50, 50)
-            }
-
-            // if it is the selected option, make it orange
-            // "+ matchedNames.length*10000" ensures that negative options
-            // don't prompt no card display
-            if (i - 1 === (option + matchedNames.length * 10000) % matchedNames.length) {
-                fill(30, 100, 50)
-                if (cardsSelected.includes(cardName)) {
-                    fill(52, 87, 50)
-                }
-            }
-
-            rect(0, yPos - 15, width, 30)
-
-            // display the card name
-            fill(0, 0, 100)
-            text(cardName, 10, yPos - 3)
-
-            // bold the first match. not all of them
-            stroke(0, 0, 100)
-            strokeWeight(1)
-            text(cardName.substring(cardName.toLowerCase().indexOf(searchBox.toLowerCase()),
-                cardName.toLowerCase().indexOf(searchBox.toLowerCase()) + searchBox.length),
-                10 + textWidth(cardName.substring(0, cardName.toLowerCase().indexOf(searchBox.toLowerCase()))), yPos - 3)
-            noStroke()
-            yPos += 30
-        }
-        // if there are no matches, say it
-        if (i === 0 && searchBox) {
-            text("No matches found", 10, 150)
-        }
-
-        // if there are matches and addSelectedOptionToCards is true...
-        if (matchedNames.length && addSelectedOptionToCards) {
-            // add the selected option to the card list
-            let cardName = matchedNames[(option + matchedNames.length * 10000) % matchedNames.length]
-            if (cardsSelected.indexOf(cardName) !== -1) {
-                cardsSelected.splice(cardsSelected.indexOf(cardName), 1)
-            } else {
-                cardsSelected.push(cardName)
-            }
-
-            print(cardsSelected)
-        }
-
-        // make sure that the option isn't added to the list the next time
-        addSelectedOptionToCards = false
+        drawTextBox()
 
         // display the card list header
         fill(0, 0, 100)
@@ -251,8 +336,8 @@ function draw() {
         text("CARD LIST", 0, 470)
 
         // display all cards selected
-        i = 0
-        yPos = 500
+        let i = 0
+        let yPos = 500
         noStroke()
         textSize(15)
         textAlign(LEFT, CENTER)
@@ -260,7 +345,7 @@ function draw() {
             i += 1
 
             // display the alternating table color
-            fill(0, 0, 20 + 10 * (i % 2))
+            fillAlternatingTableColor(i)
             rect(0, yPos - 15, width, 30)
 
             // display the card name
@@ -306,16 +391,7 @@ function draw() {
         cardsSelected = cardsWithEnoughData
         // make sure there are actually cards with enough data!
         if (cardsSelected.length === 0) {
-            resizeCanvas(200, 150)
-            background(0, 0, 0)
-            fill(0, 0, 100)
-            noStroke()
-            textAlign(LEFT, TOP)
-            text("There are no cards that \nhave enough data.", 0, 0)
-            text("Please press Ctrl+Enter to \nreturn to searching.", 0, 50)
-            stroke(0, 0, 100)
-            strokeWeight(1)
-            text("Cards you selected will \nnot be saved.", 0, 100)
+            noDataScreen()
         } else if (cardsSelected.length === 1) { // special case: diplay color pairs
             // find out ticks for OH WR and GIH WR, which means finding the
             // maximum OH WR and GIH WR values
@@ -381,25 +457,15 @@ function draw() {
             let oneTickNumGIH = ticksGIH[3]
 
             // find the winrate ticks
-            let winrateTicksGIH = []
-            let winrateTicksOH = []
+            let winrateTicksGIH = findWinrateTicks(minWinrateGIH, maxWinrateGIH)
+            let winrateTicksOH = findWinrateTicks(minWinrateOH, maxWinrateOH)
 
-            if (frameCount % 30 === 0) {
-                print(minWinrateOH, maxWinrateOH, minWinrateGIH, maxWinrateGIH)
-                print(minWinrateOH - (maxWinrateOH - minWinrateOH)/10, maxWinrateOH + (maxWinrateOH - minWinrateOH)/4,
-                      minWinrateGIH - (maxWinrateGIH - minWinrateGIH)/10, maxWinrateGIH + (maxWinrateGIH - minWinrateGIH)/4)
-            }
+            // make sure to update accordingly!
+            // startOfGIH increases by 50 for each winrate tick in OH
+            startOfGIH += winrateTicksOH.length * 50
 
-            // iterate through every tick needed for OH and GIH (increments of 5)
-            for (let i = minWinrateOH - (maxWinrateOH - minWinrateOH)/10; i < maxWinrateOH + (maxWinrateOH - minWinrateOH)/4; i += 5) {
-                winrateTicksOH.push(Math.round(i))
-                startOfGIH += 50
-                widthNeeded += 50
-            }
-            for (let i = minWinrateGIH - (maxWinrateGIH - minWinrateGIH)/10; i < maxWinrateGIH + (maxWinrateGIH - minWinrateGIH)/4; i += 5) {
-                winrateTicksGIH.push(Math.round(i))
-                widthNeeded += 50
-            }
+            // widthNeeded increases by 50 for each winrate tick
+            widthNeeded += winrateTicksGIH.length * 50 + winrateTicksOH.length * 50
 
             // now actually display the screen
             resizeCanvas(widthNeeded, 500)
@@ -449,48 +515,13 @@ function draw() {
                 gradeColors[grade][2])
             text(grade, startOfGIH + 25, startingYPos + 52)
 
-            // display the ticks
-            fill(0, 0, 50)
-            textSize(12)
-            noStroke()
-            textAlign(LEFT, TOP)
-            text(zeroTickOH, startOfOH + 52, startingYPos)
-            text(oneTickOH, startOfOH + 102, startingYPos)
-            text(twoTickOH, startOfOH + 152, startingYPos)
-
-            text(zeroTickGIH, startOfGIH + 52, startingYPos)
-            text(oneTickGIH, startOfGIH + 102, startingYPos)
-            text(twoTickGIH, startOfGIH + 152, startingYPos)
-
-            stroke(0, 0, 50)
-            strokeWeight(1)
-
-            // display the lines under the ticks to help users tell how
-            // many samples there are for a card
-            line(startOfOH + 60, startingYPos + 20, startOfOH + 60, 115 + startingYPos + colorPairsWithEnoughData.length*60)
-            line(startOfOH + 110, startingYPos + 20, startOfOH + 110, 115 + startingYPos + colorPairsWithEnoughData.length*60)
-            line(startOfOH + 160, startingYPos + 20, startOfOH + 160, 115 + startingYPos + colorPairsWithEnoughData.length*60)
-            line(startOfGIH + 60, startingYPos + 20, startOfGIH + 60, 115 + startingYPos + colorPairsWithEnoughData.length*60)
-            line(startOfGIH + 110, startingYPos + 20, startOfGIH + 110, 115 + startingYPos + colorPairsWithEnoughData.length*60)
-            line(startOfGIH + 160, startingYPos + 20, startOfGIH + 160, 115 + startingYPos + colorPairsWithEnoughData.length*60)
-
-            // now display the winrate ticks
-            let xPos = startOfOH + 210
-            for (let winrateTick of winrateTicksOH) {
-                noStroke()
-                text(winrateTick + "%", xPos - 8, startingYPos)
-                stroke(0, 0, 50)
-                line(xPos, startingYPos + 20, xPos, 115 + startingYPos + colorPairsWithEnoughData.length*60)
-                xPos += 50
-            }
-            xPos = startOfGIH + 210
-            for (let winrateTick of winrateTicksGIH) {
-                noStroke()
-                text(winrateTick + "%", xPos - 8, startingYPos)
-                stroke(0, 0, 50)
-                line(xPos, startingYPos + 20, xPos, 115 + startingYPos + colorPairsWithEnoughData.length*60)
-                xPos += 50
-            }
+            displayTicks(
+                zeroTickOH, oneTickOH, twoTickOH, // sample ticks for OH
+                zeroTickGIH, oneTickGIH, twoTickGIH, // sample ticks for GIH
+                winrateTicksOH, winrateTicksGIH, // winrate ticks
+                startOfGIH, startOfOH, startingYPos, // X and Y positions
+                colorPairsWithEnoughData // used to figure out how long the lines are
+            )
 
             // display the samples
             let samplesOH = cardStats["# OH"]
@@ -499,8 +530,8 @@ function draw() {
             noStroke()
             fill(0, 0, 100)
             textSize(20)
-            text((samplesOH > 100000) ? (round(samplesOH/10)/100000 + "M") : (round(samplesOH/10)/100 + "K"), startOfOH + 60, startingYPos + 52)
-            text((samplesGIH > 100000) ? (round(samplesGIH/10)/100000 + "M") : (round(samplesGIH/10)/100 + "K"), startOfGIH + 60, startingYPos + 52)
+            text(simplifyNum(samplesOH), startOfOH + 60, startingYPos + 52)
+            text(simplifyNum(samplesGIH), startOfGIH + 60, startingYPos + 52)
 
             // display the winrate
             let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
@@ -528,7 +559,7 @@ function draw() {
             let yPos = startingYPos + 115
             for (let colorPair of colorPairsWithEnoughData) {
                 // display the calibre
-                xPos = startOfOH - 55*3/4 - 2
+                let xPos = startOfOH - 55*3/4 - 2
                 for (let letter of colorPair) {
                     imageMode(CENTER)
                     image(WUBRG[letter], xPos, yPos, 30, 30)
@@ -541,7 +572,6 @@ function draw() {
                 noStroke()
                 fill(0, 0, 50)
                 rect(startOfOH, yPos - 25, 50, 50, 5)
-
 
                 cardStats = data[cardsSelected[0]][colorPair]
                 let grade = calculateGrade(cardStats["zScoreOH"])
@@ -622,18 +652,8 @@ function draw() {
             let oneTickNumGIH = ticksGIH[3]
 
             // find the winrate ticks
-            let winrateTicksGIH = []
-            let winrateTicksOH = []
-            // iterate through every tick needed for OH and GIH (increments of 5)
-            for (let i = minWinrateOH - (maxWinrateOH - minWinrateOH)/10; i < maxWinrateOH + (maxWinrateOH - minWinrateOH)/4; i += 5) {
-                winrateTicksOH.push(Math.round(i))
-                startOfGIH += 50
-                widthNeeded += 50
-            }
-            for (let i = minWinrateGIH - (maxWinrateGIH - minWinrateGIH)/10; i < maxWinrateGIH + (maxWinrateGIH - minWinrateGIH)/4; i += 5) {
-                winrateTicksGIH.push(Math.round(i))
-                widthNeeded += 50
-            }
+            let winrateTicksGIH = findWinrateTicks(minWinrateGIH, maxWinrateGIH)
+            let winrateTicksOH = findWinrateTicks(minWinrateOH, maxWinrateOH)
 
             // now actually display the headers and ticks
             resizeCanvas(widthNeeded, heightNeeded)
@@ -654,44 +674,13 @@ function draw() {
             text("OH", startOfOH, 65)
             text("GD", startOfGIH, 65)
 
-            fill(0, 0, 50)
-            text(zeroTickOH, startOfOH + 42, 65)
-            text(oneTickOH, startOfOH + 92, 65)
-            text(twoTickOH, startOfOH + 142, 65)
-
-            text(zeroTickGIH, startOfGIH + 42, 65)
-            text(oneTickGIH, startOfGIH + 92, 65)
-            text(twoTickGIH, startOfGIH + 142, 65)
-
-            stroke(0, 0, 50)
-            strokeWeight(1)
-
-            // display the lines under the ticks to help users tell how
-            // many samples there are for a card
-            line(startOfOH + 50, 85, startOfOH + 50, heightNeeded - 65)
-            line(startOfOH + 100, 85, startOfOH + 100, heightNeeded - 65)
-            line(startOfOH + 150, 85, startOfOH + 150, heightNeeded - 65)
-            line(startOfGIH + 50, 85, startOfGIH + 50, heightNeeded - 65)
-            line(startOfGIH + 100, 85, startOfGIH + 100, heightNeeded - 65)
-            line(startOfGIH + 150, 85, startOfGIH + 150, heightNeeded - 65)
-
-            // now display the winrate ticks
-            let xPos = startOfOH + 200
-            for (let winrateTick of winrateTicksOH) {
-                noStroke()
-                text(winrateTick + "%", xPos - 8, 65)
-                stroke(0, 0, 50)
-                line(xPos, 85, xPos, heightNeeded - 65)
-                xPos += 50
-            }
-            xPos = startOfGIH + 200
-            for (let winrateTick of winrateTicksGIH) {
-                noStroke()
-                text(winrateTick + "%", xPos - 8, 65)
-                stroke(0, 0, 50)
-                line(xPos, 85, xPos, heightNeeded - 65)
-                xPos += 50
-            }
+            displayTicks(
+                zeroTickOH, oneTickOH, twoTickOH, // sample ticks for OH
+                zeroTickGIH, oneTickGIH, twoTickGIH, // sample ticks for GIH
+                winrateTicksOH, winrateTicksGIH, // winrate ticks
+                startOfGIH, startOfOH, 65, // X and Y positions (Y position is always 65
+                cardsSelected // used to figure out how long the lines are
+            )
 
             noStroke()
 
