@@ -283,7 +283,19 @@ function findWinrateTicks(minWinrate, maxWinrate) {
     return winrateTicks
 }
 
-function displayTicks(zeroTickOH, oneTickOH, twoTickOH, zeroTickGIH, oneTickGIH, twoTickGIH, winrateTicksOH, winrateTicksGIH, startOfGIH, startOfOH, startingYPos, colorPairsWithEnoughData) {
+function displayTicks(zeroTickOH, // 0K or 0M
+                      oneTickOH, // the first tick for OH
+                      twoTickOH, // the second tick for OH, oneTickOH*2
+                      zeroTickGIH, // 0K or 0M
+                      oneTickGIH, // the first tick for GIH
+                      twoTickGIH, // the second tick for GIH, oneTickGIH*2
+                      winrateTicksOH, // the winrate ticks in OH, from findWinrateTicks()
+                      winrateTicksGIH, // the winrate ticks in GIH, from findWinrateTicks()
+                      startOfGIH, // the starting x position of GIH
+                      startOfOH, // the starting x position of OH
+                      startingYPos, // the starting y position for everything
+                      colorPairsWithEnoughData // the color pairs with enough data
+                      ) {
     // array for all the offsets, OH and GIH
     let offsetsForLines = [
         60, 110, 160
