@@ -249,24 +249,31 @@ function drawTextBox() {
     addSelectedOptionToCards = false
 }
 
-// just fills a certain grey color according to the number of these drawn
+// just fills a certain grey color according to the number of these drawn, i
 function fillAlternatingTableColor(i) {
     fill(0, 0, 20 + 10 * (i % 2))
 }
 
+// draws the screen for no data
 function noDataScreen() {
     resizeCanvas(200, 150)
     background(0, 0, 0)
+
+    // say that there are no cards that have enough data
     fill(0, 0, 100)
     noStroke()
     textAlign(LEFT, TOP)
     text("There are no cards that \nhave enough data.", 0, 0)
     text("Please press Ctrl+Enter to \nreturn to searching.", 0, 50)
+
+    // bold this part
     stroke(0, 0, 100)
     strokeWeight(1)
     text("Cards you selected will \nnot be saved.", 0, 100)
 }
 
+// finds the winrate ticks for minWinrate and maxWinrate, such that the
+// lowest and highest ticks are 75-90% left and right to the boundaries of the ticks
 function findWinrateTicks(minWinrate, maxWinrate) {
     // iterate through every tick needed for OH and GIH (increments of 5)
     let winrateTicks = []
