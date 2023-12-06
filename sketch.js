@@ -44,6 +44,7 @@ function preload() {
     }
 }
 
+// preloads all the images in the master.json data
 function loadImages(data) {
     images = {}
     for (let cardName of Object.keys(data)) {
@@ -51,41 +52,42 @@ function loadImages(data) {
     }
 }
 
+// calculates the grade
 function calculateGrade(zScore) {
     let result
 
     // special: S
     if (zScore > 3.25)
         result = "S"
-    // A range
+    // A range (1.5 <= zScore < 3.25)
     else if (zScore > (2.5 - 1 / 3))
         result = "A+"
     else if (zScore > (1.5 + 1 / 3))
         result = "A"
     else if (zScore > 1.5)
         result = "A-"
-    // B range
+    // B range (0.5 <= zScore < 1.5)
     else if (zScore > (1.5 - 1 / 3))
         result = "B+"
     else if (zScore > (0.5 + 1 / 3))
         result = "B"
     else if (zScore > 0.5)
         result = "B-"
-    // C range
+    // C range (-0.5 <= zScore < 0.5)
     else if (zScore > (0.5 - 1 / 3))
         result = "C+"
     else if (zScore > (-0.5 + 1 / 3))
         result = "C"
     else if (zScore > -0.5)
         result = "C-"
-    // D range
+    // D range (-1.5 <= zScore < -0.5)
     else if (zScore > (-0.5 - 1 / 3))
         result = "D+"
     else if (zScore > (-1.5 + 1 / 3))
         result = "D"
     else if (zScore > -1.5)
         result = "D-"
-    // E range
+    // E range (-2 <= zScore < -1.5)
     else if (zScore > -2)
         result = "E"
     // F range
