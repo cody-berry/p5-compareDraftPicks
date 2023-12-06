@@ -140,7 +140,10 @@ function drawTextBox() {
     stroke(0, 0, 100)
     strokeWeight(1)
     if (frameCount % 60 <= 30) {
-        line(textWidth(searchBox) + 12, 105, textWidth(searchBox) + 12, 125)
+        let cursorXPos = textWidth(searchBox) + 12
+        let cursorYPos = 105
+        let cursorHeight = 20
+        line(cursorXPos, cursorYPos, cursorXPos, cursorYPos + cursorHeight)
     }
 
     // text in text box
@@ -201,9 +204,11 @@ function drawTextBox() {
         // bold the first match. not all of them
         stroke(0, 0, 100)
         strokeWeight(1)
-        text(cardName.substring(cardName.toLowerCase().indexOf(searchBox.toLowerCase()),
-            cardName.toLowerCase().indexOf(searchBox.toLowerCase()) + searchBox.length),
-            10 + textWidth(cardName.substring(0, cardName.toLowerCase().indexOf(searchBox.toLowerCase()))), yPos - 3)
+        let lowerCaseCardName = cardName.toLowerCase()
+        let lowerCaseSearchBox = searchBox.toLowerCase()
+        let firstOccurenceOfSearchBoxInCardName = lowerCaseCardName.indexOf(lowerCaseSearchBox)
+        let matchInCardName = cardName.substring(firstOccurenceOfSearchBoxInCardName, firstOccurenceOfSearchBoxInCardName + searchBox.length)
+        text(matchInCardName, 10 + textWidth(cardName.substring(0, firstOccurenceOfSearchBoxInCardName)), yPos - 3)
         noStroke()
         yPos += 30
     }
@@ -257,30 +262,39 @@ function findWinrateTicks(minWinrate, maxWinrate) {
 }
 
 function displayTicks(zeroTickOH, oneTickOH, twoTickOH, zeroTickGIH, oneTickGIH, twoTickGIH, winrateTicksOH, winrateTicksGIH, startOfGIH, startOfOH, startingYPos, colorPairsWithEnoughData) {
+    // array for all the offsets, OH and GIH
+    let offsetsForLines = [
+        60, 110, 160
+    ]
+    let offsetsForTicks = [
+        52, 102, 152
+    ]
+
     // display the ticks
     fill(0, 0, 50)
     textSize(12)
     noStroke()
-    textAlign(LEFT, TOP)
-    text(zeroTickOH, startOfOH + 52, startingYPos)
-    text(oneTickOH, startOfOH + 102, startingYPos)
-    text(twoTickOH, startOfOH + 152, startingYPos)
+    textAlign(CENTER, TOP)
+    text(zeroTickOH, startOfOH + offsetsForTicks[0], startingYPos)
+    text(oneTickOH, startOfOH + offsetsForTicks[1], startingYPos)
+    text(twoTickOH, startOfOH + offsetsForTicks[2], startingYPos)
 
-    text(zeroTickGIH, startOfGIH + 52, startingYPos)
-    text(oneTickGIH, startOfGIH + 102, startingYPos)
-    text(twoTickGIH, startOfGIH + 152, startingYPos)
+    text(zeroTickGIH, startOfGIH + offsetsForTicks[0], startingYPos)
+    text(oneTickGIH, startOfGIH + offsetsForTicks[1], startingYPos)
+    text(twoTickGIH, startOfGIH + offsetsForTicks[2], startingYPos)
 
     stroke(0, 0, 50)
     strokeWeight(1)
 
-    // display the lines under the ticks to help users tell how
-    // many samples there are for a card
-    line(startOfOH + 60, startingYPos + 20, startOfOH + 60, 115 + startingYPos + colorPairsWithEnoughData.length*60)
-    line(startOfOH + 110, startingYPos + 20, startOfOH + 110, 115 + startingYPos + colorPairsWithEnoughData.length*60)
-    line(startOfOH + 160, startingYPos + 20, startOfOH + 160, 115 + startingYPos + colorPairsWithEnoughData.length*60)
-    line(startOfGIH + 60, startingYPos + 20, startOfGIH + 60, 115 + startingYPos + colorPairsWithEnoughData.length*60)
-    line(startOfGIH + 110, startingYPos + 20, startOfGIH + 110, 115 + startingYPos + colorPairsWithEnoughData.length*60)
-    line(startOfGIH + 160, startingYPos + 20, startOfGIH + 160, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+    // display the lines under the ticks
+    let startingYPosForLines = startingYPos + 20
+    let heightOfLines = 115 + startingYPos + colorPairsWithEnoughData.length*60
+    line(startOfOH + offsetsForLines[0], startingYPosForLines, startOfOH + offsetsForLines[0], heightOfLines)
+    line(startOfOH + offsetsForLines[1], startingYPosForLines, startOfOH + offsetsForLines[1], heightOfLines)
+    line(startOfOH + offsetsForLines[2], startingYPosForLines, startOfOH + offsetsForLines[2], heightOfLines)
+    line(startOfGIH + offsetsForLines[0], startingYPosForLines, startOfGIH + offsetsForLines[0], heightOfLines)
+    line(startOfGIH + offsetsForLines[1], startingYPosForLines, startOfGIH + offsetsForLines[1], heightOfLines)
+    line(startOfGIH + offsetsForLines[2], startingYPosForLines, startOfGIH + offsetsForLines[2], heightOfLines)
 
     // now display the winrate ticks
     let xPos = startOfOH + 210
@@ -288,7 +302,7 @@ function displayTicks(zeroTickOH, oneTickOH, twoTickOH, zeroTickGIH, oneTickGIH,
         noStroke()
         text(winrateTick + "%", xPos - 8, startingYPos)
         stroke(0, 0, 50)
-        line(xPos, startingYPos + 20, xPos, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+        line(xPos, startingYPos + 20, xPos, heightOfLines)
         xPos += 50
     }
     xPos = startOfGIH + 210
@@ -296,7 +310,7 @@ function displayTicks(zeroTickOH, oneTickOH, twoTickOH, zeroTickGIH, oneTickGIH,
         noStroke()
         text(winrateTick + "%", xPos - 8, startingYPos)
         stroke(0, 0, 50)
-        line(xPos, startingYPos + 20, xPos, 115 + startingYPos + colorPairsWithEnoughData.length*60)
+        line(xPos, startingYPos + 20, xPos, heightOfLines)
         xPos += 50
     }
 }
@@ -306,7 +320,7 @@ function displayTicks(zeroTickOH, oneTickOH, twoTickOH, zeroTickGIH, oneTickGIH,
 function simplifyNum(num) {
     // 100000 = 0.1M, which is the splitter for using 0.3M notation and using
     // 5K notation.
-    // round(num/100)*100 rounds the number to the nearest hundreth. M means
+    // round(num/100)*100 rounds the number to the nearest hundredth. M means
     // dividing by 1,000,000 and K means dividing by 1,000.
     return (num > 100000) ? (round(num/100)*100/1000000 + "M") : (round(num/100)*100/1000 + "K");
 }
@@ -338,6 +352,7 @@ function draw() {
         // display all cards selected
         let i = 0
         let yPos = 500
+        let heightOfBlock = 30
         noStroke()
         textSize(15)
         textAlign(LEFT, CENTER)
@@ -346,11 +361,11 @@ function draw() {
 
             // display the alternating table color
             fillAlternatingTableColor(i)
-            rect(0, yPos - 15, width, 30)
+            rect(0, yPos - heightOfBlock/2, width, heightOfBlock)
 
             // display the card name
             fill(0, 0, 100)
-            text(cardName, 10, yPos - 3)
+            text(heightOfBlock, 10, yPos - 3)
 
             yPos += 30
         }
@@ -462,10 +477,12 @@ function draw() {
 
             // make sure to update accordingly!
             // startOfGIH increases by 50 for each winrate tick in OH
-            startOfGIH += winrateTicksOH.length * 50
+            let xPositionBetweenWinrateTicks = 50
+
+            startOfGIH += winrateTicksOH.length * xPositionBetweenWinrateTicks
 
             // widthNeeded increases by 50 for each winrate tick
-            widthNeeded += winrateTicksGIH.length * 50 + winrateTicksOH.length * 50
+            widthNeeded += winrateTicksGIH.length * xPositionBetweenWinrateTicks + winrateTicksOH.length * xPositionBetweenWinrateTicks
 
             // now actually display the screen
             resizeCanvas(widthNeeded, 500)
@@ -480,12 +497,19 @@ function draw() {
 
             // display the image for the card
             let imageToDisplay = images[cardsSelected[0]]
-            image(imageToDisplay, 0, 60, 308, 429)
+            let aspectRatio = [28, 39]
+            let scale = 11
+            image(imageToDisplay, 0, 60, aspectRatio[0]*scale, aspectRatio[1]*scale)
 
             // display the OH and GIH grades
+            let gradeYPos = startingYPos + 30
+            let gradeSquareSize = 50
+            let gradeSquarePadding = 5
+            let textCenterXPos = startOfOH + gradeSquareSize/2
+            let textCenterYPos = gradeYPos + 22
             fill(0, 0, 50)
             noStroke()
-            rect(startOfOH, startingYPos + 30, 50, 50, 5)
+            rect(startOfOH, gradeYPos, gradeSquareSize, gradeSquareSize, gradeSquarePadding)
 
             cardStats = data[cardsSelected[0]]["all"]
             let grade = calculateGrade(cardStats["zScoreOH"])
@@ -498,12 +522,12 @@ function draw() {
             strokeWeight(2)
             textSize(25)
             textAlign(CENTER, CENTER)
-            text(grade, startOfOH + 25, startingYPos + 52)
+            text(grade, textCenterXPos, textCenterYPos)
 
 
             fill(0, 0, 50)
             noStroke()
-            rect(startOfGIH, startingYPos + 30, 50, 50, 5)
+            rect(startOfGIH, gradeYPos, gradeSquareSize, gradeSquareSize, gradeSquarePadding)
 
 
             grade = calculateGrade(cardStats["zScoreGIH"])
@@ -513,7 +537,9 @@ function draw() {
             stroke(gradeColors[grade][0],
                 gradeColors[grade][1],
                 gradeColors[grade][2])
-            text(grade, startOfGIH + 25, startingYPos + 52)
+            strokeWeight(2)
+            textSize(25)
+            text(grade, textCenterXPos, textCenterYPos)
 
             displayTicks(
                 zeroTickOH, oneTickOH, twoTickOH, // sample ticks for OH
@@ -530,8 +556,8 @@ function draw() {
             noStroke()
             fill(0, 0, 100)
             textSize(20)
-            text(simplifyNum(samplesOH), startOfOH + 60, startingYPos + 52)
-            text(simplifyNum(samplesGIH), startOfGIH + 60, startingYPos + 52)
+            text(simplifyNum(samplesOH), startOfOH + 60, textCenterYPos)
+            text(simplifyNum(samplesGIH), startOfGIH + 60, textCenterYPos)
 
             // display the winrate
             let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
@@ -559,13 +585,15 @@ function draw() {
             let yPos = startingYPos + 115
             for (let colorPair of colorPairsWithEnoughData) {
                 // display the calibre
-                let xPos = startOfOH - 55*3/4 - 2
+                let calibreWidth = 55
+                let padding = 2
+                let xPos = startOfOH - calibreWidth*3/4 - padding
                 for (let letter of colorPair) {
                     imageMode(CENTER)
                     image(WUBRG[letter], xPos, yPos, 30, 30)
                     imageMode(CORNER)
 
-                    xPos += 55/2
+                    xPos += calibreWidth/2
                 }
 
                 // display the OH and GIH grades
@@ -584,12 +612,12 @@ function draw() {
                 strokeWeight(2)
                 textSize(25)
                 textAlign(CENTER, CENTER)
-                text(grade, startOfOH + 25, yPos - 3)
+                text(grade, textCenterXPos, textCenterYPos)
 
 
                 fill(0, 0, 50)
                 noStroke()
-                rect(startOfGIH, yPos - 25, 50, 50, 5)
+                rect(startOfGIH, gradeYPos, gradeSquareSize, gradeSquareSize, gradeSquarePadding)
 
 
                 grade = calculateGrade(cardStats["zScoreGIH"])
@@ -599,11 +627,9 @@ function draw() {
                 stroke(gradeColors[grade][0],
                     gradeColors[grade][1],
                     gradeColors[grade][2])
-                text(grade, startOfGIH + 25, yPos - 3)
-
-                // display the samples
-                let samplesOH = cardStats["# OH"]
-                let samplesGIH = cardStats["# GD"]
+                strokeWeight(2)
+                textSize(25)
+                text(grade, textCenterXPos, textCenterYPos)
 
                 noStroke()
                 fill(0, 0, 100)
@@ -614,25 +640,27 @@ function draw() {
                 stroke(0, 0, 100)
                 strokeWeight(5)
                 let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
+                let xPosWinrateOH = startOfOH + 210 + (winrateOH - winrateTicksOH[0])*10
                 let winrateGIH = cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1)
+                let xPosWinrateGIH = startOfGIH + 210 + (winrateGIH - winrateTicksGIH[0])*10
                 let meanOH = winrateStatistics[colorPair]["OH WR"]["μ"]
+                let xPosMeanOH = startOfOH + 210 + (meanOH - winrateTicksOH[0])*10
                 let meanGIH = winrateStatistics[colorPair]["GIH WR"]["μ"]
+                let xPosMeanGIH = startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10
                 stroke(0, 0, 50)
                 strokeWeight(3)
-                line(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, yPos,
-                    startOfOH + 210 + (winrateOH - winrateTicksOH[0])*10, yPos)
-                line(startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10, yPos,
-                    startOfGIH + 210 + (winrateGIH - winrateTicksGIH[0])*10, yPos)
+                line(xPosMeanOH, yPos, xPosWinrateOH, yPos)
+                line(xPosMeanGIH, yPos, xPosWinrateGIH, yPos)
 
                 stroke(0, 0, 100)
                 strokeWeight(5)
-                point(startOfOH + 210 + (winrateOH - winrateTicksOH[0])*10, yPos)
-                point(startOfGIH + 210 + (winrateGIH - winrateTicksGIH[0])*10, yPos)
+                point(xPosWinrateOH, yPos)
+                point(xPosWinrateGIH, yPos)
 
                 stroke(0, 0, 75)
                 strokeWeight(4)
-                point(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, yPos)
-                point(startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10, yPos)
+                point(xPosMeanOH, yPos)
+                point(xPosMeanGIH, yPos)
 
                 yPos += 60
             }
@@ -668,17 +696,18 @@ function draw() {
             fill(0, 0, 50)
             noStroke()
             textSize(12)
-            text("Name", 10, 65)
+            let yPosHeaders = 65
+            text("Name", 10, yPosHeaders)
 
             fill(0, 0, 100)
-            text("OH", startOfOH, 65)
-            text("GD", startOfGIH, 65)
+            text("OH", startOfOH, yPosHeaders)
+            text("GD", startOfGIH, yPosHeaders)
 
             displayTicks(
                 zeroTickOH, oneTickOH, twoTickOH, // sample ticks for OH
                 zeroTickGIH, oneTickGIH, twoTickGIH, // sample ticks for GIH
                 winrateTicksOH, winrateTicksGIH, // winrate ticks
-                startOfGIH, startOfOH, 65, // X and Y positions (Y position is always 65
+                startOfGIH, startOfOH, yPosHeaders, // X and Y positions (Y position is always 65)
                 cardsSelected // used to figure out how long the lines are
             )
 
@@ -723,9 +752,13 @@ function draw() {
                 text(grade, startOfOH, yPos - 2)
 
                 // display the rectangle for the samples as well
+                let startingYPosOfSamples = yPos - 4
+                let heightOfSampleBar = 8
+                let xPosSamplesOH = (cardStats["# OH"] / oneTickNumOH) * 50
+                let xPosSamplesGIH = (cardStats["# GD"] / oneTickNumOH) * 50
                 noStroke()
                 fill(0, 0, 100)
-                rect(startOfOH + 50, yPos - 4, (cardStats["# OH"] / oneTickNumOH) * 50, 8, 0, 4, 4, 0)
+                rect(startOfOH + 50, startingYPosOfSamples, xPosSamplesOH, heightOfSampleBar, 0, 4, 4, 0)
 
                 // GIH
                 grade = calculateGrade(cardStats["zScoreGIH"])
@@ -741,29 +774,31 @@ function draw() {
                 // display the rectangle for the samples as well
                 noStroke()
                 fill(0, 0, 100)
-                rect(startOfGIH + 50, yPos - 4, (cardStats["# GD"] / oneTickNumGIH) * 50, 8, 0, 4, 4, 0)
+                rect(startOfGIH + 50, startingYPosOfSamples, xPosSamplesGIH, heightOfSampleBar, 0, 4, 4, 0)
 
                 // display the point for the winrate
                 let winrateGIH = cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1)
+                let xPosWinrateGIH = startOfGIH + 200 + (winrateGIH - winrateTicksGIH[0])*10
                 let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
+                let xPosWinrateOH = startOfOH + 200 + (winrateOH - winrateTicksOH[0])*10
                 let meanGIH = winrateStatistics["all"]["GIH WR"]["μ"]
+                let xPosMeanGIH = startOfGIH + 200 + (meanGIH - winrateTicksGIH[0])*10
                 let meanOH = winrateStatistics["all"]["OH WR"]["μ"]
+                let xPosMeanOH = startOfOH + 200 + (meanOH - winrateTicksOH[0])*10
                 stroke(0, 0, 50)
                 strokeWeight(3)
-                line(startOfGIH + 200 + (winrateGIH - winrateTicksGIH[0])*10, yPos,
-                    startOfGIH + 200 + (meanGIH - winrateTicksGIH[0])*10, yPos)
-                line(startOfOH + 200 + (winrateOH - winrateTicksOH[0])*10, yPos,
-                    startOfOH + 200 + (meanOH - winrateTicksOH[0])*10, yPos)
+                line(xPosWinrateGIH, yPos, xPosMeanGIH, yPos)
+                line(xPosWinrateOH, yPos, xPosMeanOH, yPos)
 
                 stroke(0, 0, 100)
                 strokeWeight(5)
-                point(startOfGIH + 200 + (winrateGIH - winrateTicksGIH[0])*10, yPos)
-                point(startOfOH + 200 + (winrateOH - winrateTicksOH[0])*10, yPos)
+                point(xPosWinrateGIH, yPos)
+                point(xPosWinrateOH, yPos)
 
                 stroke(0, 0, 75)
                 strokeWeight(4)
-                point(startOfGIH + 200 + (meanGIH - winrateTicksGIH[0])*10, yPos)
-                point(startOfOH + 200 + (meanOH - winrateTicksOH[0])*10, yPos)
+                point(xPosMeanGIH, yPos)
+                point(xPosMeanOH, yPos)
 
                 noStroke()
 
