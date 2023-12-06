@@ -304,47 +304,58 @@ function displayTicks(zeroTickOH, // 0K or 0M
         52, 102, 152
     ]
 
-    // display the ticks
+    // display the tick numbers
     fill(0, 0, 50)
     textSize(12)
     noStroke()
     textAlign(CENTER, TOP)
+
+    // OH
     text(zeroTickOH, startOfOH + offsetsForTicks[0], startingYPos)
     text(oneTickOH, startOfOH + offsetsForTicks[1], startingYPos)
     text(twoTickOH, startOfOH + offsetsForTicks[2], startingYPos)
 
+    // GIH
     text(zeroTickGIH, startOfGIH + offsetsForTicks[0], startingYPos)
     text(oneTickGIH, startOfGIH + offsetsForTicks[1], startingYPos)
     text(twoTickGIH, startOfGIH + offsetsForTicks[2], startingYPos)
 
+
+    // display the lines under the ticks
+    let startingYPosForLines = startingYPos + 20 // the starting yPos for the lines is just 20 above the starting yPos for the tick numbers
+    let heightOfLines = 115 + startingYPos + colorPairsWithEnoughData.length*60
     stroke(0, 0, 50)
     strokeWeight(1)
 
-    // display the lines under the ticks
-    let startingYPosForLines = startingYPos + 20
-    let heightOfLines = 115 + startingYPos + colorPairsWithEnoughData.length*60
+    // OH
     line(startOfOH + offsetsForLines[0], startingYPosForLines, startOfOH + offsetsForLines[0], heightOfLines)
     line(startOfOH + offsetsForLines[1], startingYPosForLines, startOfOH + offsetsForLines[1], heightOfLines)
     line(startOfOH + offsetsForLines[2], startingYPosForLines, startOfOH + offsetsForLines[2], heightOfLines)
+
+    // GIH
     line(startOfGIH + offsetsForLines[0], startingYPosForLines, startOfGIH + offsetsForLines[0], heightOfLines)
     line(startOfGIH + offsetsForLines[1], startingYPosForLines, startOfGIH + offsetsForLines[1], heightOfLines)
     line(startOfGIH + offsetsForLines[2], startingYPosForLines, startOfGIH + offsetsForLines[2], heightOfLines)
 
-    // now display the winrate ticks
+    // now display the winrate ticks and lines
+
+    // OH
     let xPos = startOfOH + 210
     for (let winrateTick of winrateTicksOH) {
         noStroke()
-        text(winrateTick + "%", xPos - 8, startingYPos)
+        text(winrateTick + "%", xPos - 8, startingYPos) // tick
         stroke(0, 0, 50)
-        line(xPos, startingYPos + 20, xPos, heightOfLines)
+        line(xPos, startingYPos + 20, xPos, heightOfLines) // line
         xPos += 50
     }
+
+    // GIH
     xPos = startOfGIH + 210
     for (let winrateTick of winrateTicksGIH) {
         noStroke()
-        text(winrateTick + "%", xPos - 8, startingYPos)
+        text(winrateTick + "%", xPos - 8, startingYPos) // tick
         stroke(0, 0, 50)
-        line(xPos, startingYPos + 20, xPos, heightOfLines)
+        line(xPos, startingYPos + 20, xPos, heightOfLines) // line
         xPos += 50
     }
 }
