@@ -133,12 +133,15 @@ function setup() {
 }
 
 function drawTextBox() {
+    // text box outline
     rectMode(CORNER)
     textSize(15)
     noFill()
     stroke(0, 0, 50)
     strokeWeight(1)
     rect(5, 100, 490, 30)
+
+    // cursor (displays for the first 30 frames of every 60 frames)
     stroke(0, 0, 100)
     strokeWeight(1)
     if (frameCount % 60 <= 30) {
@@ -165,7 +168,7 @@ function drawTextBox() {
             for (let cardName of cardNames) {
                 // make sure there's no repeats!
                 if (!matchedNames.includes(cardName) && cardName.toLowerCase().substring(i, i + searchBox.length) === searchBox.toLowerCase()) {
-                    // limit is 9
+                    // limit to num cards is 9
                     if (matchedNames.length < 9) {
                         matchedNames.push(cardName)
                     }
@@ -179,7 +182,7 @@ function drawTextBox() {
     for (let cardName of matchedNames) {
         i += 1
 
-        // display the alternating table color
+        // fill and display alternating table color
         fillAlternatingTableColor(i)
 
         // if it is part of the cards list, make it green
@@ -192,6 +195,8 @@ function drawTextBox() {
         // don't prompt no card display
         if (i - 1 === (option + matchedNames.length * 10000) % matchedNames.length) {
             fill(30, 100, 50)
+
+            // if it's the selected option and it's part of the card list, make it a slightly green-ish orange color
             if (cardsSelected.includes(cardName)) {
                 fill(52, 87, 50)
             }
@@ -206,10 +211,18 @@ function drawTextBox() {
         // bold the first match. not all of them
         stroke(0, 0, 100)
         strokeWeight(1)
+
+        // enable caseless matching by making both lowercase
         let lowerCaseCardName = cardName.toLowerCase()
         let lowerCaseSearchBox = searchBox.toLowerCase()
+
+        // now, match the lowercase variables
         let firstOccurenceOfSearchBoxInCardName = lowerCaseCardName.indexOf(lowerCaseSearchBox)
+
+        // convert the match back to its proper case
         let matchInCardName = cardName.substring(firstOccurenceOfSearchBoxInCardName, firstOccurenceOfSearchBoxInCardName + searchBox.length)
+
+        // and display it now
         text(matchInCardName, 10 + textWidth(cardName.substring(0, firstOccurenceOfSearchBoxInCardName)), yPos - 3)
         noStroke()
         yPos += 30
@@ -219,7 +232,7 @@ function drawTextBox() {
         text("No matches found", 10, 150)
     }
 
-    // if there are matches and addSelectedOptionToCards is true...
+    // if there are matches and we're supposed to add the selected option this frame...
     if (matchedNames.length && addSelectedOptionToCards) {
         // add the selected option to the card list
         let cardName = matchedNames[(option + matchedNames.length * 10000) % matchedNames.length]
