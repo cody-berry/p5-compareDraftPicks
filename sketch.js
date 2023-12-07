@@ -420,19 +420,20 @@ function draw() {
         // find out ticks for OH WR and GIH WR, which means finding the
         // maximum OH WR and GIH WR values
         // also find out ticks
-        let startOfOH = 240
-        let startOfGIH = startOfOH + 200
-        let widthNeeded = startOfGIH + 200
-        let maxSamplesOH = 0
-        let maxSamplesGIH = 0
-        let maxWinrateOH = 0
-        let minWinrateOH = 100
-        let maxWinrateGIH = 0
-        let minWinrateGIH = 100
-        let cardsWithEnoughData = []
+        let startOfOH = 240 // the starting x-position of the OH section
+        let startOfGIH = startOfOH + 200 // the starting x-position of the GIH section
+        let widthNeeded = startOfGIH + 200 // the width needed. takes effect this frame
+        let maxSamplesOH = 0 // the maximum samples of each card in OH
+        let maxSamplesGIH = 0 // the maximum samples of each card in GIH
+        let maxWinrateOH = 0 // the maximum OH winrate of the cards
+        let minWinrateOH = 100 // the minimum OH winrate of the cards
+        let maxWinrateGIH = 0 // the maximum GIH winrate of the cards
+        let minWinrateGIH = 100 // the minimum GIH winrate of the cards
+        let cardsWithEnoughData = [] // the cards with enough data such that it has OH and GIH winrate data
         for (let cardName of cardsSelected) {
-            let cardStats = data[cardName]["all"]
+            let cardStats = data[cardName]["all"] // grab the data for all color pairs
             if (cardStats["OH WR"] !== "") { // check for enough data
+                // update if needed
                 maxSamplesOH = max(maxSamplesOH, cardStats["# OH"])
                 maxSamplesGIH = max(maxSamplesGIH, cardStats["# GD"])
 
@@ -444,6 +445,7 @@ function draw() {
                 cardsWithEnoughData.push(cardName)
             }
         }
+        // round the mean winrate to the nearest tenth
         minWinrateOH = parseInt(min(minWinrateOH, round(winrateStatistics["all"]["OH WR"]["μ"]*10)/10))
         maxWinrateOH = parseInt(max(maxWinrateOH, round(winrateStatistics["all"]["OH WR"]["μ"]*10)/10))
         minWinrateGIH = parseInt(min(minWinrateGIH, round(winrateStatistics["all"]["GIH WR"]["μ"]*10)/10))
@@ -452,19 +454,19 @@ function draw() {
         // make sure there are actually cards with enough data!
         if (cardsSelected.length === 0) {
             noDataScreen()
-        } else if (cardsSelected.length === 1) { // special case: diplay color pairs
+        } else if (cardsSelected.length === 1) { // special case: display color pairs
             // find out ticks for OH WR and GIH WR, which means finding the
             // maximum OH WR and GIH WR values
-            let startingYPos = height/2 - 70
-            let startOfOH = 360
-            let startOfGIH = startOfOH + 210
-            let widthNeeded = startOfGIH + 210
-            let maxSamplesOH = 0
-            let maxSamplesGIH = 0
-            let maxWinrateOH = 0
-            let minWinrateOH = 100
-            let maxWinrateGIH = 0
-            let minWinrateGIH = 100
+            let startingYPos = height/2 - 70 // starting y pos is in the middle
+            let startOfOH = 360 // the starting x-position of the OH section
+            let startOfGIH = startOfOH + 210 // the starting x-position of the GIH section
+            let widthNeeded = startOfGIH + 210 // the width needed. takes effect this frame
+            let maxSamplesOH = 0 // the maximum samples of each card in OH
+            let maxSamplesGIH = 0 // the maximum samples of each card in GIH
+            let maxWinrateOH = 0 // the maximum OH winrate of the cards
+            let minWinrateOH = 100 // the minimum OH winrate of the cards
+            let maxWinrateGIH = 0 // the maximum GIH winrate of the cards
+            let minWinrateGIH = 100 // the minimum GIH winrate of the cards
             let colorPairsWithEnoughData = []
             for (let colorPair of [
                 "WU", "WB", "WR", "WG",
@@ -473,6 +475,7 @@ function draw() {
             ]) {
                 let cardStats = data[cardsSelected[0]][colorPair]
                 if (cardStats["OH WR"] !== "") { // check for enough data
+                    // update if needed
                     maxSamplesOH = max(maxSamplesOH, cardStats["# OH"])
                     maxSamplesGIH = max(maxSamplesGIH, cardStats["# GD"])
 
@@ -481,6 +484,7 @@ function draw() {
                     minWinrateGIH = min(minWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
                     maxWinrateGIH = max(maxWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
 
+                    // this time, calculate mean (rounded to tenths) each color pair
                     minWinrateOH = min(minWinrateOH, round(winrateStatistics[colorPair]["OH WR"]["μ"]*10)/10)
                     maxWinrateOH = max(maxWinrateOH, round(winrateStatistics[colorPair]["OH WR"]["μ"]*10)/10)
                     minWinrateGIH = min(minWinrateGIH, round(winrateStatistics[colorPair]["GIH WR"]["μ"*10]/10))
@@ -533,6 +537,7 @@ function draw() {
             resizeCanvas(widthNeeded, 500)
             background(0, 0, 0)
 
+            // display a big STATS header
             textSize(50)
             fill(0, 0, 100)
             stroke(0, 0, 100)
@@ -552,11 +557,13 @@ function draw() {
             let gradeSquarePadding = 5
             let textCenterXPos = startOfOH + gradeSquareSize/2
             let textCenterYPos = gradeYPos + 22
+            // display a padded grey rectangle
             fill(0, 0, 50)
             noStroke()
             rect(startOfOH, gradeYPos, gradeSquareSize, gradeSquareSize, gradeSquarePadding)
 
             cardStats = data[cardsSelected[0]]["all"]
+            // get the grade and display it at the center
             let grade = calculateGrade(cardStats["zScoreOH"])
             fill(gradeColors[grade][0],
                 gradeColors[grade][1],
@@ -569,7 +576,7 @@ function draw() {
             textAlign(CENTER, CENTER)
             text(grade, textCenterXPos, textCenterYPos)
 
-
+            // do the same for GIH
             fill(0, 0, 50)
             noStroke()
             rect(startOfGIH, gradeYPos, gradeSquareSize, gradeSquareSize, gradeSquarePadding)
@@ -586,6 +593,7 @@ function draw() {
             textSize(25)
             text(grade, textCenterXPos, textCenterYPos)
 
+            // now display the ticks in this extra-long method
             displayTicks(
                 zeroTickOH, oneTickOH, twoTickOH, // sample ticks for OH
                 zeroTickGIH, oneTickGIH, twoTickGIH, // sample ticks for GIH
@@ -594,7 +602,7 @@ function draw() {
                 colorPairsWithEnoughData // used to figure out how long the lines are
             )
 
-            // display the samples
+            // display the samples (number)
             let samplesOH = cardStats["# OH"]
             let samplesGIH = cardStats["# GD"]
 
@@ -609,6 +617,8 @@ function draw() {
             let winrateGIH = cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1)
             let meanOH = winrateStatistics["all"]["OH WR"]["μ"]
             let meanGIH = winrateStatistics["all"]["GIH WR"]["μ"]
+
+            // line between mean and winrate
             stroke(0, 0, 50)
             strokeWeight(3)
             line(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, startingYPos + 55,
@@ -616,11 +626,13 @@ function draw() {
             line(startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10, startingYPos + 55,
                 startOfGIH + 210 + (winrateGIH - winrateTicksGIH[0])*10, startingYPos + 55)
 
+            // winrate
             stroke(0, 0, 100)
             strokeWeight(5)
             point(startOfOH + 210 + (winrateOH - winrateTicksOH[0])*10, startingYPos + 55)
             point(startOfGIH + 210 + (winrateGIH - winrateTicksGIH[0])*10, startingYPos + 55)
 
+            // mean
             stroke(0, 0, 75)
             strokeWeight(4)
             point(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, startingYPos + 55)
@@ -641,7 +653,7 @@ function draw() {
                     xPos += calibreWidth/2
                 }
 
-                // display the OH and GIH grades
+                // display the OH and GIH grades, same as last time
                 noStroke()
                 fill(0, 0, 50)
                 rect(startOfOH, yPos - 25, 50, 50, 5)
@@ -676,12 +688,14 @@ function draw() {
                 textSize(25)
                 text(grade, textCenterXPos, textCenterYPos)
 
+
+                // now display the samples with a bar with a rounded end
                 noStroke()
                 fill(0, 0, 100)
                 rect(startOfOH + 60, yPos - 4, (samplesOH/oneTickNumOH)*50, 8, 0, 4, 4, 0)
                 rect(startOfGIH + 60, yPos - 4, (samplesGIH/oneTickNumGIH)*50, 8, 0, 4, 4, 0)
 
-                // display the winrate
+                // display the winrate, same as last time
                 stroke(0, 0, 100)
                 strokeWeight(5)
                 let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
@@ -732,12 +746,15 @@ function draw() {
             resizeCanvas(widthNeeded, heightNeeded)
             background(0, 0, 0)
 
+            // display a big, bold STATS
             textSize(50)
             fill(0, 0, 100)
             stroke(0, 0, 100)
             strokeWeight(3)
             textAlign(LEFT, TOP)
             text("STATS", 10, 0)
+
+            // and now display the actual headers: Name, OH, and GIH
             fill(0, 0, 50)
             noStroke()
             textSize(12)
@@ -800,7 +817,6 @@ function draw() {
                 let startingYPosOfSamples = yPos - 4
                 let heightOfSampleBar = 8
                 let xPosSamplesOH = (cardStats["# OH"] / oneTickNumOH) * 50
-                let xPosSamplesGIH = (cardStats["# GD"] / oneTickNumOH) * 50
                 noStroke()
                 fill(0, 0, 100)
                 rect(startOfOH + 50, startingYPosOfSamples, xPosSamplesOH, heightOfSampleBar, 0, 4, 4, 0)
@@ -817,6 +833,8 @@ function draw() {
                 text(grade, startOfGIH, yPos - 2)
 
                 // display the rectangle for the samples as well
+                // we don't have to re-define the context variables
+                let xPosSamplesGIH = (cardStats["# GD"] / oneTickNumGIH) * 50
                 noStroke()
                 fill(0, 0, 100)
                 rect(startOfGIH + 50, startingYPosOfSamples, xPosSamplesGIH, heightOfSampleBar, 0, 4, 4, 0)
