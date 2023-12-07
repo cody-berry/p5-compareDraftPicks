@@ -371,11 +371,11 @@ function simplifyNum(num) {
 }
 
 function draw() {
-    print(displayState)
     if (displayState === "SEARCH") {
         resizeCanvas(500, heightNeeded)
         background(0, 0, 10)
 
+        // display a big, bold SEARCH at the top
         textSize(50)
         fill(0, 0, 100)
         stroke(0, 0, 100)
@@ -386,7 +386,7 @@ function draw() {
         // text box
         drawTextBox()
 
-        // display the card list header
+        // display a big, bold CARD LIST next (not as big or bold as last time)
         fill(0, 0, 100)
         textSize(40)
         stroke(0, 0, 100)
@@ -397,14 +397,14 @@ function draw() {
         // display all cards selected
         let i = 0
         let yPos = 500
-        let heightOfBlock = 30
+        let heightOfBlock = 30 // the height of each row
         noStroke()
         textSize(15)
         textAlign(LEFT, CENTER)
         for (let cardName of cardsSelected) {
             i += 1
 
-            // display the alternating table color
+            // display a rectangle representing the row with alternating table color
             fillAlternatingTableColor(i)
             rect(0, yPos - heightOfBlock/2, width, heightOfBlock)
 
@@ -412,9 +412,9 @@ function draw() {
             fill(0, 0, 100)
             text(heightOfBlock, 10, yPos - 3)
 
-            yPos += 30
+            yPos += heightOfBlock
         }
-        heightNeeded = yPos - 15
+        heightNeeded = yPos - heightOfBlock/2
     } if (displayState === "STATS") {
         // display headers
         // find out ticks for OH WR and GIH WR, which means finding the
