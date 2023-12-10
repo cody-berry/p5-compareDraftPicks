@@ -410,7 +410,7 @@ function draw() {
 
             // display the card name
             fill(0, 0, 100)
-            text(heightOfBlock, 10, yPos - 3)
+            text(cardName, 10, yPos - 3)
 
             yPos += heightOfBlock
         }
@@ -421,8 +421,8 @@ function draw() {
         // maximum OH WR and GIH WR values
         // also find out ticks
         let startOfOH = 240 // the starting x-position of the OH section
-        let startOfGIH = startOfOH + 200 // the starting x-position of the GIH section
-        let widthNeeded = startOfGIH + 200 // the width needed. takes effect this frame
+        let startOfGIH = startOfOH + 210 // the starting x-position of the GIH section
+        let widthNeeded = startOfGIH + 210 // the width needed. takes effect this frame
         let maxSamplesOH = 0 // the maximum samples of each card in OH
         let maxSamplesGIH = 0 // the maximum samples of each card in GIH
         let maxWinrateOH = 0 // the maximum OH winrate of the cards
@@ -555,7 +555,8 @@ function draw() {
             let gradeYPos = startingYPos + 30
             let gradeSquareSize = 50
             let gradeSquarePadding = 5
-            let textCenterXPos = startOfOH + gradeSquareSize/2
+            let textCenterXPosOH = startOfOH + gradeSquareSize/2
+            let textCenterXPosGIH = startOfGIH + gradeSquareSize/2
             let textCenterYPos = gradeYPos + 22
             // display a padded grey rectangle
             fill(0, 0, 50)
@@ -574,7 +575,7 @@ function draw() {
             strokeWeight(2)
             textSize(25)
             textAlign(CENTER, CENTER)
-            text(grade, textCenterXPos, textCenterYPos)
+            text(grade, textCenterXPosOH, textCenterYPos)
 
             // do the same for GIH
             fill(0, 0, 50)
@@ -591,7 +592,7 @@ function draw() {
                 gradeColors[grade][2])
             strokeWeight(2)
             textSize(25)
-            text(grade, textCenterXPos, textCenterYPos)
+            text(grade, textCenterXPosGIH, textCenterYPos)
 
             // now display the ticks in this extra-long method
             displayTicks(
@@ -609,6 +610,7 @@ function draw() {
             noStroke()
             fill(0, 0, 100)
             textSize(20)
+            textAlign(LEFT, CENTER)
             text(simplifyNum(samplesOH), startOfOH + 60, textCenterYPos)
             text(simplifyNum(samplesGIH), startOfGIH + 60, textCenterYPos)
 
@@ -654,9 +656,15 @@ function draw() {
                 }
 
                 // display the OH and GIH grades, same as last time
+                let gradeYPos = yPos - 25
+                let gradeSquareSize = 50
+                let gradeSquarePadding = 5
+                let textCenterXPosOH = startOfOH + gradeSquareSize/2
+                let textCenterXPosGIH = startOfGIH + gradeSquareSize/2
+                let textCenterYPos = gradeYPos + 22
                 noStroke()
                 fill(0, 0, 50)
-                rect(startOfOH, yPos - 25, 50, 50, 5)
+                rect(startOfOH, gradeYPos, gradeSquareSize, gradeSquareSize, gradeSquarePadding)
 
                 cardStats = data[cardsSelected[0]][colorPair]
                 let grade = calculateGrade(cardStats["zScoreOH"])
@@ -669,7 +677,7 @@ function draw() {
                 strokeWeight(2)
                 textSize(25)
                 textAlign(CENTER, CENTER)
-                text(grade, textCenterXPos, textCenterYPos)
+                text(grade, textCenterXPosOH, textCenterYPos)
 
 
                 fill(0, 0, 50)
@@ -686,10 +694,12 @@ function draw() {
                     gradeColors[grade][2])
                 strokeWeight(2)
                 textSize(25)
-                text(grade, textCenterXPos, textCenterYPos)
+                text(grade, textCenterXPosGIH, textCenterYPos)
 
 
                 // now display the samples with a bar with a rounded end
+                let samplesOH = cardStats["# OH"]
+                let samplesGIH = cardStats["# GD"]
                 noStroke()
                 fill(0, 0, 100)
                 rect(startOfOH + 60, yPos - 4, (samplesOH/oneTickNumOH)*50, 8, 0, 4, 4, 0)
@@ -741,6 +751,10 @@ function draw() {
             // find the winrate ticks
             let winrateTicksGIH = findWinrateTicks(minWinrateGIH, maxWinrateGIH)
             let winrateTicksOH = findWinrateTicks(minWinrateOH, maxWinrateOH)
+
+            // each tick is 50 x position
+            startOfGIH += 50*winrateTicksOH.length
+            widthNeeded += 50*winrateTicksOH.length + 50*winrateTicksGIH.length
 
             // now actually display the headers and ticks
             resizeCanvas(widthNeeded, heightNeeded)
@@ -819,7 +833,7 @@ function draw() {
                 let xPosSamplesOH = (cardStats["# OH"] / oneTickNumOH) * 50
                 noStroke()
                 fill(0, 0, 100)
-                rect(startOfOH + 50, startingYPosOfSamples, xPosSamplesOH, heightOfSampleBar, 0, 4, 4, 0)
+                rect(startOfOH + 60, startingYPosOfSamples, xPosSamplesOH, heightOfSampleBar, 0, 4, 4, 0)
 
                 // GIH
                 grade = calculateGrade(cardStats["zScoreGIH"])
@@ -837,7 +851,7 @@ function draw() {
                 let xPosSamplesGIH = (cardStats["# GD"] / oneTickNumGIH) * 50
                 noStroke()
                 fill(0, 0, 100)
-                rect(startOfGIH + 50, startingYPosOfSamples, xPosSamplesGIH, heightOfSampleBar, 0, 4, 4, 0)
+                rect(startOfGIH + 60, startingYPosOfSamples, xPosSamplesGIH, heightOfSampleBar, 0, 4, 4, 0)
 
                 // display the point for the winrate
                 let winrateGIH = cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1)
@@ -891,6 +905,7 @@ function findSampleTicks(maximumValueNeededToRepresent) {
     let twoTick = "0.2K" // the string representation for the second tick.
     let oneTickNum = 100 // the number representation for the first tick.
 
+    // continue progressing as the maximum value needed to represent gets larger
     if (maximumValueNeededToRepresent > 200) {
         oneTick = "0.25K"
         twoTick = "0.5K"
@@ -917,7 +932,7 @@ function findSampleTicks(maximumValueNeededToRepresent) {
         oneTickNum = 15000
     } if (maximumValueNeededToRepresent > 30000) {
         oneTick = "50K"
-        twoTick = "100K"
+        twoTick = "100K" // this is the reason why we're not using simplifyNum here: this would say 0.1M, and we don't want that to happen
         oneTickNum = 50000
     } if (maximumValueNeededToRepresent > 100000) {
         zeroTick = "0M"
@@ -932,6 +947,26 @@ function findSampleTicks(maximumValueNeededToRepresent) {
         oneTick = "0.5M"
         twoTick = "1M"
         oneTickNum = 500000
+    } if (maximumValueNeededToRepresent > 1000000) {
+        oneTick = "1M"
+        twoTick = "2M"
+        oneTickNum = 1000000
+    } if (maximumValueNeededToRepresent > 2000000) {
+        oneTick = "2.5M"
+        twoTick = "5M"
+        oneTickNum = 2500000
+    } if (maximumValueNeededToRepresent > 5000000) {
+        oneTick = "6M"
+        twoTick = "12M"
+        oneTickNum = 6000000
+    } if (maximumValueNeededToRepresent > 12000000) {
+        oneTick = "15M"
+        twoTick = "30M"
+        oneTickNum = 15000000
+    } if (maximumValueNeededToRepresent > 30000000) {
+        oneTick = "50M"
+        twoTick = "100M"
+        oneTickNum = 50000000
     }
 
     return [zeroTick, oneTick, twoTick, oneTickNum]
@@ -946,10 +981,14 @@ function keyPressed() {
     }
 
     let justEnteredSearch = false
+    // there is "option" in STATS too
     if (displayState === "STATS") {
         if (keyCode === ENTER) {
             if (keyIsDown(CONTROL)) {
                 displayState = "SEARCH"
+
+                // use CTRL+ENTER to toggle
+                // without this, then CTRL+ENTER on STATS switches to SEARCH and then goes back to STATS
                 justEnteredSearch = true
                 cardsSelected = []
             } else {
@@ -964,7 +1003,7 @@ function keyPressed() {
         }
     }
     if (displayState === "SEARCH") {
-        if ([
+        if ([ // all letters able to type, preventing things like F12 from being added
             'a', 'b', 'c', 'd', 'e',
             'f', 'g', 'h', 'i', 'j',
             'k', 'l', 'm', 'n', 'o',
