@@ -327,6 +327,7 @@ function displayTicks(zeroTickOH, // 0K or 0M
     stroke(0, 0, 50)
     strokeWeight(1)
 
+    // now display the winrate ticks and lines
     // OH
     line(startOfOH + offsetsForLines[0], startingYPosForLines, startOfOH + offsetsForLines[0], heightOfLines)
     line(startOfOH + offsetsForLines[1], startingYPosForLines, startOfOH + offsetsForLines[1], heightOfLines)
@@ -337,7 +338,6 @@ function displayTicks(zeroTickOH, // 0K or 0M
     line(startOfGIH + offsetsForLines[1], startingYPosForLines, startOfGIH + offsetsForLines[1], heightOfLines)
     line(startOfGIH + offsetsForLines[2], startingYPosForLines, startOfGIH + offsetsForLines[2], heightOfLines)
 
-    // now display the winrate ticks and lines
 
     // OH
     let xPos = startOfOH + 210
@@ -417,8 +417,6 @@ function draw() {
         heightNeeded = yPos - heightOfBlock/2
     } if (displayState === "STATS") {
         // display headers
-        // find out ticks for OH WR and GIH WR, which means finding the
-        // maximum OH WR and GIH WR values
         // also find out ticks
         let startOfOH = 240 // the starting x-position of the OH section
         let startOfGIH = startOfOH + 210 // the starting x-position of the GIH section
@@ -429,28 +427,32 @@ function draw() {
         let minWinrateOH = 100 // the minimum OH winrate of the cards
         let maxWinrateGIH = 0 // the maximum GIH winrate of the cards
         let minWinrateGIH = 100 // the minimum GIH winrate of the cards
-        let cardsWithEnoughData = [] // the cards with enough data such that it has OH and GIH winrate data
+        let cardsWithEnoughOHData = [] // the cards with enough data such that it has OH winrate data
+        let cardsWithEnoughGIHData = [] // the cards with enough data such that it has GIH winrate data
         for (let cardName of cardsSelected) {
             let cardStats = data[cardName]["all"] // grab the data for all color pairs
-            if (cardStats["OH WR"] !== "") { // check for enough data
                 // update if needed
                 maxSamplesOH = max(maxSamplesOH, cardStats["# OH"])
                 maxSamplesGIH = max(maxSamplesGIH, cardStats["# GD"])
 
+            if (cardStats["OH WR"] !== "") { // check for enough data
                 minWinrateOH = min(minWinrateOH, cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1))
                 maxWinrateOH = max(maxWinrateOH, cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1))
+                cardsWithEnoughOHData.push(cardName)
+            } if (cardStats["GIH WR"] !== "") {
                 minWinrateGIH = min(minWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
                 maxWinrateGIH = max(maxWinrateGIH, cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1))
-
-                cardsWithEnoughData.push(cardName)
+                cardsWithEnoughGIHData.push(cardName)
             }
+
+
+
         }
         // round the mean winrate to the nearest tenth
         minWinrateOH = parseInt(min(minWinrateOH, round(winrateStatistics["all"]["OH WR"]["μ"]*10)/10))
         maxWinrateOH = parseInt(max(maxWinrateOH, round(winrateStatistics["all"]["OH WR"]["μ"]*10)/10))
         minWinrateGIH = parseInt(min(minWinrateGIH, round(winrateStatistics["all"]["GIH WR"]["μ"]*10)/10))
         maxWinrateGIH = parseInt(max(maxWinrateGIH, round(winrateStatistics["all"]["GIH WR"]["μ"]*10)/10))
-        cardsSelected = cardsWithEnoughData
         // make sure there are actually cards with enough data!
         if (cardsSelected.length === 0) {
             noDataScreen()
@@ -753,8 +755,8 @@ function draw() {
             let winrateTicksOH = findWinrateTicks(minWinrateOH, maxWinrateOH)
 
             // each tick is 50 x position
-            startOfGIH += 50*winrateTicksOH.length
-            widthNeeded += 50*winrateTicksOH.length + 50*winrateTicksGIH.length
+            startOfGIH += max(50*winrateTicksOH.length, 150)
+            widthNeeded += max(50*winrateTicksOH.length, 150) + max(50*winrateTicksGIH.length, 150)
 
             // now actually display the headers and ticks
             resizeCanvas(widthNeeded, heightNeeded)
@@ -825,7 +827,9 @@ function draw() {
                     gradeColors[grade][1],
                     gradeColors[grade][2])
                 strokeWeight(1)
-                text(grade, startOfOH, yPos - 2)
+                if (cardsWithEnoughOHData.includes(cardName)) {
+                    text(grade, startOfOH, yPos - 2)
+                }
 
                 // display the rectangle for the samples as well
                 let startingYPosOfSamples = yPos - 4
@@ -844,7 +848,9 @@ function draw() {
                     gradeColors[grade][1],
                     gradeColors[grade][2])
                 strokeWeight(1)
-                text(grade, startOfGIH, yPos - 2)
+                if (cardsWithEnoughGIHData.includes(cardName)) {
+                    text(grade, startOfGIH, yPos - 2)
+                }
 
                 // display the rectangle for the samples as well
                 // we don't have to re-define the context variables
@@ -853,29 +859,50 @@ function draw() {
                 fill(0, 0, 100)
                 rect(startOfGIH + 60, startingYPosOfSamples, xPosSamplesGIH, heightOfSampleBar, 0, 4, 4, 0)
 
+
+                textAlign(LEFT, CENTER)
                 // display the point for the winrate
-                let winrateGIH = cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1)
-                let xPosWinrateGIH = startOfGIH + 200 + (winrateGIH - winrateTicksGIH[0])*10
-                let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
-                let xPosWinrateOH = startOfOH + 200 + (winrateOH - winrateTicksOH[0])*10
-                let meanGIH = winrateStatistics["all"]["GIH WR"]["μ"]
-                let xPosMeanGIH = startOfGIH + 200 + (meanGIH - winrateTicksGIH[0])*10
-                let meanOH = winrateStatistics["all"]["OH WR"]["μ"]
-                let xPosMeanOH = startOfOH + 200 + (meanOH - winrateTicksOH[0])*10
-                stroke(0, 0, 50)
-                strokeWeight(3)
-                line(xPosWinrateGIH, yPos, xPosMeanGIH, yPos)
-                line(xPosWinrateOH, yPos, xPosMeanOH, yPos)
+                if (cardsWithEnoughGIHData.includes(cardName)) {
+                    let winrateGIH = cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1)
+                    let xPosWinrateGIH = startOfGIH + 200 + (winrateGIH - winrateTicksGIH[0]) * 10
+                    let meanGIH = winrateStatistics["all"]["GIH WR"]["μ"]
+                    let xPosMeanGIH = startOfGIH + 200 + (meanGIH - winrateTicksGIH[0])*10
+                    stroke(0, 0, 50)
+                    strokeWeight(3)
+                    line(xPosWinrateGIH, yPos, xPosMeanGIH, yPos)
 
-                stroke(0, 0, 100)
-                strokeWeight(5)
-                point(xPosWinrateGIH, yPos)
-                point(xPosWinrateOH, yPos)
+                    stroke(0, 0, 100)
+                    strokeWeight(5)
+                    point(xPosWinrateGIH, yPos)
 
-                stroke(0, 0, 75)
-                strokeWeight(4)
-                point(xPosMeanGIH, yPos)
-                point(xPosMeanOH, yPos)
+                    stroke(0, 0, 75)
+                    strokeWeight(4)
+                    point(xPosMeanGIH, yPos)
+                } else {
+                    noStroke()
+                    fill(0, 0, 100)
+                    text("Not enough data", startOfGIH + 210, yPos)
+                } if (cardsWithEnoughOHData.includes(cardName)) {
+                    let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
+                    let xPosWinrateOH = startOfOH + 200 + (winrateOH - winrateTicksOH[0])*10
+                    let meanOH = winrateStatistics["all"]["OH WR"]["μ"]
+                    let xPosMeanOH = startOfOH + 200 + (meanOH - winrateTicksOH[0])*10
+                    stroke(0, 0, 50)
+                    strokeWeight(3)
+                    line(xPosWinrateOH, yPos, xPosMeanOH, yPos)
+
+                    stroke(0, 0, 100)
+                    strokeWeight(5)
+                    point(xPosWinrateOH, yPos)
+
+                    stroke(0, 0, 75)
+                    strokeWeight(4)
+                    point(xPosMeanOH, yPos)
+                } else {
+                    noStroke()
+                    fill(0, 0, 100)
+                    text("Not enough data", startOfOH + 210, yPos)
+                }
 
                 noStroke()
 
