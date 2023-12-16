@@ -943,7 +943,7 @@ function draw() {
             fill(0, 0, 50)
             textAlign(LEFT, TOP)
             text("Some cards might not have enough data (<500 samples). Those" +
-                " will not be showed \nhere.", 10, yPos - 10)
+                " will not be shown \nhere.", 10, yPos - 10)
             text("Cards that do not have enough data won't have winrates.", 10, yPos + 30)
         }
     }
