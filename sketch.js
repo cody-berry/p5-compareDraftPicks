@@ -256,20 +256,19 @@ function fillAlternatingTableColor(i) {
 
 // draws the screen for no data
 function noDataScreen() {
-    resizeCanvas(200, 150)
+    resizeCanvas(200, 40)
     background(0, 0, 0)
 
-    // say that there are no cards that have enough data
-    fill(0, 0, 100)
-    noStroke()
-    textAlign(LEFT, TOP)
-    text("There are no cards that \nhave enough data.", 0, 0)
-    text("Please press Ctrl+Enter to \nreturn to searching.", 0, 50)
-
-    // bold this part
-    stroke(0, 0, 100)
+    // say that there are no cards selected
+    fill(0, 50, 100)
+    stroke(0, 50, 100)
     strokeWeight(1)
-    text("Cards you selected will \nnot be saved.", 0, 100)
+    textAlign(LEFT, TOP)
+    text("You didn't enter any cards.", 0, 0)
+    fill(0, 0, 100)
+    stroke(0, 0, 100)
+    strokeWeight(0)
+    text("Please press Ctrl+Enter.", 0, 20)
 }
 
 // finds the winrate ticks for minWinrate and maxWinrate, such that the
