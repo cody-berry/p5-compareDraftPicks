@@ -25,6 +25,12 @@ let gradeColors
 
 let images
 let WUBRG
+let WSVGOn = false
+let USVGOn = false
+let BSVGOn = false
+let RSVGOn = false
+let GSVGOn = false
+let colorPair = "all"
 
 let displayState = "SEARCH"
 
@@ -41,6 +47,13 @@ function preload() {
         "B": loadImage("WUBRG/B.png"),
         "R": loadImage("WUBRG/R.png"),
         "G": loadImage("WUBRG/G.png")
+    }
+    WUBRGSVGs = {
+        "W": loadImage("svg/W.svg"),
+        "U": loadImage("svg/U.svg"),
+        "B": loadImage("svg/B.svg"),
+        "R": loadImage("svg/R.svg"),
+        "G": loadImage("svg/G.svg")
     }
 }
 
@@ -429,7 +442,7 @@ function draw() {
         let cardsWithEnoughOHData = [] // the cards with enough data such that it has OH winrate data
         let cardsWithEnoughGIHData = [] // the cards with enough data such that it has GIH winrate data
         for (let cardName of cardsSelected) {
-            let cardStats = data[cardName]["all"] // grab the data for all color pairs
+            let cardStats = data[cardName][colorPair] // grab the data for all color pairs
                 // update if needed
                 maxSamplesOH = max(maxSamplesOH, cardStats["# OH"])
                 maxSamplesGIH = max(maxSamplesGIH, cardStats["# GD"])
@@ -847,7 +860,7 @@ function draw() {
                 text(cardName, 10, yPos - 3)
 
                 // find out the grades and display them
-                let cardStats = data[cardName]["all"]
+                let cardStats = data[cardName][colorPair]
 
                 // OH
                 let grade = calculateGrade(cardStats["zScoreOH"])
@@ -945,6 +958,38 @@ function draw() {
             text("Some cards might not have enough data (<500 samples). Those" +
                 " will not be shown \nhere.", 10, yPos - 10)
             text("Cards that do not have enough data won't have winrates.", 10, yPos + 30)
+
+            // display the SVG color selectors
+            // W
+            tint(0, 0, 50)
+            if (WSVGOn) {
+                tint(0, 0, 80)
+            }
+            image(WUBRGSVGs["W"], width - 150, yPos - 10, 30, 30)
+            // U
+            tint(0, 0, 50)
+            if (USVGOn) {
+                tint(216, 96, 98)
+            }
+            image(WUBRGSVGs["U"], width - 120, yPos - 10, 30, 30)
+            // B
+            tint(0, 0, 50)
+            if (BSVGOn) {
+                tint(0, 0, 25)
+            }
+            image(WUBRGSVGs["B"], width - 90, yPos - 10, 30, 30)
+            // R
+            tint(0, 0, 50)
+            if (RSVGOn) {
+                tint(0, 66, 78)
+            }
+            image(WUBRGSVGs["R"], width - 60, yPos - 10, 30, 30)
+            // G
+            tint(0, 0, 50)
+            if (GSVGOn) {
+                tint(89, 100, 58)
+            }
+            image(WUBRGSVGs["G"], width - 30, yPos - 10, 30, 30)
         }
     }
 
