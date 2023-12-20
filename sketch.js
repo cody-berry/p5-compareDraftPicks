@@ -25,11 +25,11 @@ let gradeColors
 
 let images
 let WUBRG
-let WSVGOn = false
-let USVGOn = false
-let BSVGOn = false
-let RSVGOn = false
-let GSVGOn = false
+let WSVGOn = true
+let USVGOn = true
+let BSVGOn = true
+let RSVGOn = true
+let GSVGOn = true
 let colorPair = "all"
 
 let displayState = "SEARCH"
@@ -963,31 +963,31 @@ function draw() {
             // W
             tint(0, 0, 50)
             if (WSVGOn) {
-                tint(0, 0, 80)
+                tint(60, 15, 100)
             }
             image(WUBRGSVGs["W"], width - 150, yPos - 10, 30, 30)
             // U
             tint(0, 0, 50)
             if (USVGOn) {
-                tint(216, 96, 98)
+                tint(190, 50, 85)
             }
             image(WUBRGSVGs["U"], width - 120, yPos - 10, 30, 30)
             // B
             tint(0, 0, 50)
             if (BSVGOn) {
-                tint(0, 0, 25)
+                tint(300, 15, 25)
             }
             image(WUBRGSVGs["B"], width - 90, yPos - 10, 30, 30)
             // R
             tint(0, 0, 50)
             if (RSVGOn) {
-                tint(0, 66, 78)
+                tint(0, 65, 90)
             }
             image(WUBRGSVGs["R"], width - 60, yPos - 10, 30, 30)
             // G
             tint(0, 0, 50)
             if (GSVGOn) {
-                tint(89, 100, 58)
+                tint(90, 100, 60)
             }
             image(WUBRGSVGs["G"], width - 30, yPos - 10, 30, 30)
         }
