@@ -961,35 +961,52 @@ function draw() {
 
             // display the SVG color selectors
             // W
+            noFill()
+            strokeWeight(1)
             tint(0, 0, 50)
+            stroke(0, 0, 50)
             if (WSVGOn) {
                 tint(60, 15, 100)
+                stroke(60, 15, 100)
             }
-            image(WUBRGSVGs["W"], width - 150, yPos - 10, 30, 30)
+            rect(width - 200, yPos - 13, 36, 36)
+            image(WUBRGSVGs["W"], width - 195, yPos - 10, 30, 30)
             // U
             tint(0, 0, 50)
+            stroke(0, 0, 50)
             if (USVGOn) {
                 tint(190, 50, 85)
+                stroke(190, 50, 85)
             }
-            image(WUBRGSVGs["U"], width - 120, yPos - 10, 30, 30)
+            rect(width - 160, yPos - 13, 36, 36)
+            image(WUBRGSVGs["U"], width - 155, yPos - 10, 30, 30)
             // B
             tint(0, 0, 50)
+            stroke(0, 0, 50)
             if (BSVGOn) {
-                tint(300, 15, 25)
+                tint(300, 20, 35)
+                stroke(300, 20, 35)
             }
-            image(WUBRGSVGs["B"], width - 90, yPos - 10, 30, 30)
+            rect(width - 120, yPos - 13, 36, 36)
+            image(WUBRGSVGs["B"], width - 115, yPos - 10, 30, 30)
             // R
             tint(0, 0, 50)
+            stroke(0, 0, 50)
             if (RSVGOn) {
                 tint(0, 65, 90)
+                stroke(0, 65, 90)
             }
-            image(WUBRGSVGs["R"], width - 60, yPos - 10, 30, 30)
+            rect(width - 80, yPos - 13, 36, 36)
+            image(WUBRGSVGs["R"], width - 75, yPos - 10, 30, 30)
             // G
             tint(0, 0, 50)
+            stroke(0, 0, 50)
             if (GSVGOn) {
                 tint(90, 100, 60)
+                stroke(90, 100, 60)
             }
-            image(WUBRGSVGs["G"], width - 30, yPos - 10, 30, 30)
+            rect(width - 40, yPos - 13, 36, 36)
+            image(WUBRGSVGs["G"], width - 35, yPos - 10, 30, 30)
         }
     }
 
