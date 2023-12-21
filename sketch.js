@@ -25,11 +25,11 @@ let gradeColors
 
 let images
 let WUBRG
-let WSVGOn = true
-let USVGOn = true
-let BSVGOn = true
-let RSVGOn = true
-let GSVGOn = true
+let WSVGOn = false
+let USVGOn = false
+let BSVGOn = false
+let RSVGOn = false
+let GSVGOn = false
 let colorPair = "all"
 
 let displayState = "SEARCH"
@@ -963,8 +963,8 @@ function draw() {
             // W
             noFill()
             strokeWeight(1)
-            tint(0, 0, 50)
-            stroke(0, 0, 50)
+            tint(0, 0, 25)
+            stroke(0, 0, 25)
             if (WSVGOn) {
                 tint(60, 15, 100)
                 stroke(60, 15, 100)
@@ -972,8 +972,8 @@ function draw() {
             rect(200, 3, 36, 36)
             image(WUBRGSVGs["W"], 203, 6, 30, 30)
             // U
-            tint(0, 0, 50)
-            stroke(0, 0, 50)
+            tint(0, 0, 25)
+            stroke(0, 0, 25)
             if (USVGOn) {
                 tint(190, 50, 85)
                 stroke(190, 50, 85)
@@ -981,17 +981,17 @@ function draw() {
             rect(240, 3, 36, 36)
             image(WUBRGSVGs["U"], 243, 6, 30, 30)
             // B
-            tint(0, 0, 50)
-            stroke(0, 0, 50)
+            tint(0, 0, 25)
+            stroke(0, 0, 25)
             if (BSVGOn) {
-                tint(300, 15, 35)
-                stroke(300, 15, 35)
+                tint(300, 15, 40)
+                stroke(300, 15, 40)
             }
             rect(280, 3, 36, 36)
             image(WUBRGSVGs["B"], 283, 6, 30, 30)
             // R
-            tint(0, 0, 50)
-            stroke(0, 0, 50)
+            tint(0, 0, 25)
+            stroke(0, 0, 25)
             if (RSVGOn) {
                 tint(0, 65, 90)
                 stroke(0, 65, 90)
@@ -999,8 +999,8 @@ function draw() {
             rect(320, 3, 36, 36)
             image(WUBRGSVGs["R"], 323, 6, 30, 30)
             // G
-            tint(0, 0, 50)
-            stroke(0, 0, 50)
+            tint(0, 0, 25)
+            stroke(0, 0, 25)
             if (GSVGOn) {
                 tint(90, 100, 60)
                 stroke(90, 100, 60)
@@ -1194,6 +1194,80 @@ function keyPressed() {
 
     if (!keyIsDown(CONTROL) && !keyIsDown(ALT) && key !== "F12") {
         return false
+    }
+}
+
+// toggles the color
+function toggleColor(color) {
+    let turnedOff = false
+    let turnedOn = false
+    if (color === "W") {
+        if (!WSVGOn) {
+            turnedOn = true
+            WSVGOn = true
+        } else {
+            turnedOff = true
+            WSVGOn = false
+        }
+    } if (color === "U") {
+        if (!USVGOn) {
+            turnedOn = true
+            USVGOn = true
+        } else {
+            turnedOff = true
+            USVGOn = false
+        }
+    } if (color === "B") {
+        if (!BSVGOn) {
+            turnedOn = true
+            BSVGOn = true
+        } else {
+            turnedOff = true
+            BSVGOn = false
+        }
+    } if (color === "R") {
+        if (!RSVGOn) {
+            turnedOn = true
+            RSVGOn = true
+        } else {
+            turnedOff = true
+            RSVGOn = false
+        }
+    } if (color === "G") {
+        if (!GSVGOn) {
+            turnedOn = true
+            GSVGOn = true
+        } else {
+            turnedOff = true
+            GSVGOn = false
+        }
+    }
+}
+
+function mousePressed() {
+    // check for W, U, B, R, and G presses
+    if (displayState === "STATS") {
+        if (cardsSelected.length > 1) {
+            if (mouseY > 3 && mouseY < 39) {
+                let xPosMinW = 200
+                let xPosMaxW = 236
+                let UOffset = 40
+                let BOffset = 80
+                let ROffset = 120
+                let GOffset = 160
+                if (mouseX > xPosMinW && mouseX < xPosMaxW) {
+                    toggleColor("W")
+                } if (mouseX > xPosMinW + UOffset && mouseX < xPosMaxW + UOffset) {
+                    toggleColor("U")
+                } if (mouseX > xPosMinW + BOffset && mouseX < xPosMaxW + BOffset) {
+                    toggleColor("B")
+                } if (mouseX > xPosMinW + ROffset && mouseX < xPosMaxW + ROffset) {
+                    toggleColor("R")
+                } if (mouseX > xPosMinW + GOffset && mouseX < xPosMaxW + GOffset) {
+                    toggleColor("G")
+                }
+            }
+        }
     }
 }
 
