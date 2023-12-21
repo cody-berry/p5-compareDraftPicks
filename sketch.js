@@ -910,7 +910,7 @@ function draw() {
                 if (cardsWithEnoughGIHData.includes(cardName)) {
                     let winrateGIH = cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1)
                     let xPosWinrateGIH = startOfGIH + 200 + (winrateGIH - winrateTicksGIH[0]) * 10
-                    let meanGIH = winrateStatistics["all"]["GIH WR"]["μ"]
+                    let meanGIH = winrateStatistics[colorPair]["GIH WR"]["μ"]
                     let xPosMeanGIH = startOfGIH + 200 + (meanGIH - winrateTicksGIH[0])*10
                     stroke(0, 0, 50)
                     strokeWeight(3)
@@ -930,7 +930,7 @@ function draw() {
                 } if (cardsWithEnoughOHData.includes(cardName)) {
                     let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
                     let xPosWinrateOH = startOfOH + 200 + (winrateOH - winrateTicksOH[0])*10
-                    let meanOH = winrateStatistics["all"]["OH WR"]["μ"]
+                    let meanOH = winrateStatistics[colorPair]["OH WR"]["μ"]
                     let xPosMeanOH = startOfOH + 200 + (meanOH - winrateTicksOH[0])*10
                     stroke(0, 0, 50)
                     strokeWeight(3)
@@ -1198,10 +1198,11 @@ function keyPressed() {
     }
 }
 
-// toggles the color
+// toggles the color, and sets the color pair as necessary
 function toggleColor(color) {
     let turnedOff = false
     let turnedOn = false
+    // toggles the color!
     if (color === "W") {
         if (!WSVGOn) {
             turnedOn = true
@@ -1249,12 +1250,11 @@ function toggleColor(color) {
     } if (turnedOn) {
         colorsSelected += 1
     }
-    print(colorsSelected)
     // you can't select a third color. undo if third color is selected
     if (colorsSelected === 3) {
         if (color === "W") {
             WSVGOn = false
-            colorsSelected -= 1
+            colorsSelected -= 1 // you have to do this to undo it
         } if (color === "U") {
             USVGOn = false
             colorsSelected -= 1
@@ -1268,6 +1268,19 @@ function toggleColor(color) {
             GSVGOn = false
             colorsSelected -= 1
         }
+    } if (colorsSelected === 2) { // set to color pair!
+        if (WSVGOn && USVGOn) {colorPair = "WU"}
+        if (USVGOn && BSVGOn) {colorPair = "UB"}
+        if (BSVGOn && RSVGOn) {colorPair = "BR"}
+        if (RSVGOn && GSVGOn) {colorPair = "RG"}
+        if (GSVGOn && WSVGOn) {colorPair = "WG"}
+        if (WSVGOn && BSVGOn) {colorPair = "WB"}
+        if (USVGOn && RSVGOn) {colorPair = "UR"}
+        if (BSVGOn && GSVGOn) {colorPair = "BG"}
+        if (RSVGOn && WSVGOn) {colorPair = "WR"}
+        if (GSVGOn && USVGOn) {colorPair = "UG"}
+    } if (colorsSelected === 0) { // reset color pair
+        colorPair = "all"
     }
 }
 
