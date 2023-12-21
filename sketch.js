@@ -30,6 +30,7 @@ let USVGOn = false
 let BSVGOn = false
 let RSVGOn = false
 let GSVGOn = false
+let colorsSelected = 0
 let colorPair = "all"
 
 let displayState = "SEARCH"
@@ -1240,6 +1241,32 @@ function toggleColor(color) {
         } else {
             turnedOff = true
             GSVGOn = false
+        }
+    }
+
+    if (turnedOff) {
+        colorsSelected -= 1
+    } if (turnedOn) {
+        colorsSelected += 1
+    }
+    print(colorsSelected)
+    // you can't select a third color. undo if third color is selected
+    if (colorsSelected === 3) {
+        if (color === "W") {
+            WSVGOn = false
+            colorsSelected -= 1
+        } if (color === "U") {
+            USVGOn = false
+            colorsSelected -= 1
+        } if (color === "B") {
+            BSVGOn = false
+            colorsSelected -= 1
+        } if (color === "R") {
+            RSVGOn = false
+            colorsSelected -= 1
+        } if (color === "G") {
+            GSVGOn = false
+            colorsSelected -= 1
         }
     }
 }
