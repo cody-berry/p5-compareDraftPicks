@@ -969,8 +969,8 @@ function draw() {
                 tint(60, 15, 100)
                 stroke(60, 15, 100)
             }
-            rect(width - 200, yPos - 13, 36, 36)
-            image(WUBRGSVGs["W"], width - 195, yPos - 10, 30, 30)
+            rect(200, 3, 36, 36)
+            image(WUBRGSVGs["W"], 203, 6, 30, 30)
             // U
             tint(0, 0, 50)
             stroke(0, 0, 50)
@@ -978,17 +978,17 @@ function draw() {
                 tint(190, 50, 85)
                 stroke(190, 50, 85)
             }
-            rect(width - 160, yPos - 13, 36, 36)
-            image(WUBRGSVGs["U"], width - 155, yPos - 10, 30, 30)
+            rect(240, 3, 36, 36)
+            image(WUBRGSVGs["U"], 243, 6, 30, 30)
             // B
             tint(0, 0, 50)
             stroke(0, 0, 50)
             if (BSVGOn) {
-                tint(300, 20, 35)
-                stroke(300, 20, 35)
+                tint(300, 15, 35)
+                stroke(300, 15, 35)
             }
-            rect(width - 120, yPos - 13, 36, 36)
-            image(WUBRGSVGs["B"], width - 115, yPos - 10, 30, 30)
+            rect(280, 3, 36, 36)
+            image(WUBRGSVGs["B"], 283, 6, 30, 30)
             // R
             tint(0, 0, 50)
             stroke(0, 0, 50)
@@ -996,8 +996,8 @@ function draw() {
                 tint(0, 65, 90)
                 stroke(0, 65, 90)
             }
-            rect(width - 80, yPos - 13, 36, 36)
-            image(WUBRGSVGs["R"], width - 75, yPos - 10, 30, 30)
+            rect(320, 3, 36, 36)
+            image(WUBRGSVGs["R"], 323, 6, 30, 30)
             // G
             tint(0, 0, 50)
             stroke(0, 0, 50)
@@ -1005,8 +1005,8 @@ function draw() {
                 tint(90, 100, 60)
                 stroke(90, 100, 60)
             }
-            rect(width - 40, yPos - 13, 36, 36)
-            image(WUBRGSVGs["G"], width - 35, yPos - 10, 30, 30)
+            rect(360, 3, 36, 36)
+            image(WUBRGSVGs["G"], 363, 6, 30, 30)
         }
     }
 
