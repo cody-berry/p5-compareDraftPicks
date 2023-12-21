@@ -25,11 +25,7 @@ let gradeColors
 
 let images
 let WUBRG
-let WSVGOn = false
-let USVGOn = false
-let BSVGOn = false
-let RSVGOn = false
-let GSVGOn = false
+let SVGsOn = {}
 let colorsSelected = 0
 let colorPair = "all"
 
@@ -55,6 +51,13 @@ function preload() {
         "B": loadImage("svg/B.svg"),
         "R": loadImage("svg/R.svg"),
         "G": loadImage("svg/G.svg")
+    }
+    SVGsOn = { // each key is a color. each value is [SVG on?, color, xPos]
+        "W": [false, [60, 15, 100], 200],
+        "U": [false, [190, 50, 85], 240],
+        "B": [false, [300, 15, 40], 280],
+        "R": [false, [0, 65, 90], 320],
+        "G": [false, [90, 100, 60], 360]
     }
 }
 
@@ -961,53 +964,21 @@ function draw() {
             text("Cards that do not have enough data won't have winrates.", 10, yPos + 30)
 
             // display the SVG color selectors
-            // W
+            // iterate through each color ("in" accesses color, which we'll need)
             noFill()
             strokeWeight(1)
-            tint(0, 0, 25)
-            stroke(0, 0, 25)
-            if (WSVGOn) {
-                tint(60, 15, 100)
-                stroke(60, 15, 100)
+            for (let color in SVGsOn) {
+                let colorData = SVGsOn[color]
+                tint(0, 0, 25)
+                stroke(0, 0, 25)
+                if (colorData[0]) { // is the SVG on?
+                    tint(colorData[1][0], colorData[1][1], colorData[1][2])
+                    stroke(colorData[1][0], colorData[1][1], colorData[1][2])
+                }
+                // draw rectangle and SVG
+                rect(colorData[2], 15, 36, 36)
+                image(WUBRGSVGs[color], colorData[2] + 3, 18, 30, 30)
             }
-            rect(200, 15, 36, 36)
-            image(WUBRGSVGs["W"], 203, 18, 30, 30)
-            // U
-            tint(0, 0, 25)
-            stroke(0, 0, 25)
-            if (USVGOn) {
-                tint(190, 50, 85)
-                stroke(190, 50, 85)
-            }
-            rect(240, 15, 36, 36)
-            image(WUBRGSVGs["U"], 243, 18, 30, 30)
-            // B
-            tint(0, 0, 25)
-            stroke(0, 0, 25)
-            if (BSVGOn) {
-                tint(300, 15, 40)
-                stroke(300, 15, 40)
-            }
-            rect(280, 15, 36, 36)
-            image(WUBRGSVGs["B"], 283, 18, 30, 30)
-            // R
-            tint(0, 0, 25)
-            stroke(0, 0, 25)
-            if (RSVGOn) {
-                tint(0, 65, 90)
-                stroke(0, 65, 90)
-            }
-            rect(320, 15, 36, 36)
-            image(WUBRGSVGs["R"], 323, 18, 30, 30)
-            // G
-            tint(0, 0, 25)
-            stroke(0, 0, 25)
-            if (GSVGOn) {
-                tint(90, 100, 60)
-                stroke(90, 100, 60)
-            }
-            rect(360, 15, 36, 36)
-            image(WUBRGSVGs["G"], 363, 18, 30, 30)
         }
     }
 
