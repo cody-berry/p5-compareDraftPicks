@@ -23,7 +23,7 @@ let addSelectedOptionToCards = false
 let heightNeeded = 0
 let gradeColors
 
-let images
+let images = {}
 let WUBRG
 let SVGsOn = {}
 let colorsSelected = 0
@@ -36,7 +36,7 @@ function preload() {
     font = loadFont('data/meiryo.ttf')
     fixedWidthFont = loadFont('data/consola.ttf')
     variableWidthFont = loadFont('data/meiryo.ttf')
-    data = loadJSON("json/master.json", loadImages)
+    data = loadJSON("json/master.json")
     winrateStatistics = loadJSON("json/statistics.json")
     WUBRG = {
         "W": loadImage("WUBRG/W.png"),
@@ -58,14 +58,6 @@ function preload() {
         "B": [false, [300, 15, 40], 280],
         "R": [false, [0, 65, 90], 320],
         "G": [false, [90, 100, 60], 360]
-    }
-}
-
-// preloads all the images in the master.json data
-function loadImages(data) {
-    images = {}
-    for (let cardName of Object.keys(data)) {
-        images[cardName] = loadImage(data[cardName]["all"]["url"])
     }
 }
 
@@ -570,6 +562,9 @@ function draw() {
             text("STATS", 10, 0)
 
             // display the image for the card
+            if (!images.hasOwnProperty(cardsSelected[0])) {
+                images[cardsSelected[0]] = loadImage(`cardImages/lci/${cardsSelected[0]}.jpg`)
+            }
             let imageToDisplay = images[cardsSelected[0]]
             let aspectRatio = [28, 39]
             let scale = 11
