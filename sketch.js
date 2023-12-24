@@ -1170,49 +1170,19 @@ function keyPressed() {
 }
 
 // toggles the color, and sets the color pair as necessary
-function toggleColor(color) {
+function toggleColor(colorPressed) {
     let turnedOff = false
     let turnedOn = false
     // toggles the color!
-    if (color === "W") {
-        if (!WSVGOn) {
-            turnedOn = true
-            WSVGOn = true
-        } else {
-            turnedOff = true
-            WSVGOn = false
-        }
-    } if (color === "U") {
-        if (!USVGOn) {
-            turnedOn = true
-            USVGOn = true
-        } else {
-            turnedOff = true
-            USVGOn = false
-        }
-    } if (color === "B") {
-        if (!BSVGOn) {
-            turnedOn = true
-            BSVGOn = true
-        } else {
-            turnedOff = true
-            BSVGOn = false
-        }
-    } if (color === "R") {
-        if (!RSVGOn) {
-            turnedOn = true
-            RSVGOn = true
-        } else {
-            turnedOff = true
-            RSVGOn = false
-        }
-    } if (color === "G") {
-        if (!GSVGOn) {
-            turnedOn = true
-            GSVGOn = true
-        } else {
-            turnedOff = true
-            GSVGOn = false
+    for (let color in SVGsOn) { // iterate through keys
+        if (color === colorPressed) {
+            if (SVGsOn[0]) {
+                turnedOff = true
+                SVGsOn[0] = false
+            } if (!SVGsOn[0] && colorsSelected !== 2) {// you can't select a third color.
+                turnedOn = true
+                SVGsOn[0] = true
+            }
         }
     }
 
@@ -1221,35 +1191,14 @@ function toggleColor(color) {
     } if (turnedOn) {
         colorsSelected += 1
     }
-    // you can't select a third color. undo if third color is selected
-    if (colorsSelected === 3) {
-        if (color === "W") {
-            WSVGOn = false
-            colorsSelected -= 1 // you have to do this to undo it
-        } if (color === "U") {
-            USVGOn = false
-            colorsSelected -= 1
-        } if (color === "B") {
-            BSVGOn = false
-            colorsSelected -= 1
-        } if (color === "R") {
-            RSVGOn = false
-            colorsSelected -= 1
-        } if (color === "G") {
-            GSVGOn = false
-            colorsSelected -= 1
+
+    if (colorsSelected === 2) { // set to color pair!
+        colorPair = ""
+        for (let color in SVGsOn) {
+            if (SVGsOn[color][0] === true) {
+                colorPair += color
+            }
         }
-    } if (colorsSelected === 2) { // set to color pair!
-        if (WSVGOn && USVGOn) {colorPair = "WU"}
-        if (USVGOn && BSVGOn) {colorPair = "UB"}
-        if (BSVGOn && RSVGOn) {colorPair = "BR"}
-        if (RSVGOn && GSVGOn) {colorPair = "RG"}
-        if (GSVGOn && WSVGOn) {colorPair = "WG"}
-        if (WSVGOn && BSVGOn) {colorPair = "WB"}
-        if (USVGOn && RSVGOn) {colorPair = "UR"}
-        if (BSVGOn && GSVGOn) {colorPair = "BG"}
-        if (RSVGOn && WSVGOn) {colorPair = "WR"}
-        if (GSVGOn && USVGOn) {colorPair = "UG"}
     } if (colorsSelected === 0) { // reset color pair
         colorPair = "all"
     }
