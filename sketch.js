@@ -974,6 +974,7 @@ function draw() {
                 rect(colorData[2], 15, 36, 36)
                 image(WUBRGSVGs[color], colorData[2] + 3, 18, 30, 30)
             }
+            tint(0, 0, 100)
         }
     }
 
@@ -987,13 +988,26 @@ function draw() {
 }
 
 function findSampleTicks(maximumValueNeededToRepresent) {
-    let zeroTick = "0K" // the string representation for 0. 0K or 0M.
-    let oneTick = "0.1K" // the string representation for the first tick.
-    let twoTick = "0.2K" // the string representation for the second tick.
-    let oneTickNum = 100 // the number representation for the first tick.
+    let zeroTick = "0" // the string representation for 0. 0, 0K, or 0M.
+    let oneTick = "5" // the string representation for the first tick.
+    let twoTick = "10" // the string representation for the second tick.
+    let oneTickNum = 5 // the number representation for the first tick.
 
     // continue progressing as the maximum value needed to represent gets larger
-    if (maximumValueNeededToRepresent > 200) {
+    if (maximumValueNeededToRepresent > 10) {
+        oneTick = "15"
+        twoTick = "30"
+        oneTickNum = 15
+    } if (maximumValueNeededToRepresent > 30) {
+        oneTick = "30"
+        twoTick = "60"
+        oneTickNum = 60
+    } if (maximumValueNeededToRepresent > 60) {
+        zeroTick = "0K"
+        oneTick = "0.1K"
+        twoTick = "0.2K"
+        oneTickNum = 100
+    } if (maximumValueNeededToRepresent > 200) {
         oneTick = "0.25K"
         twoTick = "0.5K"
         oneTickNum = 250
@@ -1171,12 +1185,12 @@ function toggleColor(colorPressed) {
     // toggles the color!
     for (let color in SVGsOn) { // iterate through keys
         if (color === colorPressed) {
-            if (SVGsOn[0]) {
+            if (SVGsOn[color][0]) {
                 turnedOff = true
-                SVGsOn[0] = false
-            } if (!SVGsOn[0] && colorsSelected !== 2) {// you can't select a third color.
+                SVGsOn[color][0] = false
+            } else if (!SVGsOn[0] && colorsSelected !== 2) {// you can't select a third color.
                 turnedOn = true
-                SVGsOn[0] = true
+                SVGsOn[color][0] = true
             }
         }
     }
