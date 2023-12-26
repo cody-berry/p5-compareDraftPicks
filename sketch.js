@@ -965,7 +965,7 @@ function draw() {
             for (let color in SVGsOn) {
                 let colorData = SVGsOn[color]
                 tint(0, 0, 25)
-                stroke(0, 0, 25)
+                stroke(0, 0, 50)
                 if (colorData[0]) { // is the SVG on?
                     tint(colorData[1][0], colorData[1][1], colorData[1][2])
                     stroke(colorData[1][0], colorData[1][1], colorData[1][2])
