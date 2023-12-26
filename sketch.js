@@ -798,8 +798,8 @@ function draw() {
             let winrateTicksOH = findWinrateTicks(minWinrateOH, maxWinrateOH)
 
             // each tick is 50 x position
-            startOfGIH += max(50*winrateTicksOH.length, 150)
-            widthNeeded += max(50*winrateTicksOH.length, 150) + max(50*winrateTicksGIH.length, 150)
+            startOfGIH += 50*winrateTicksOH.length
+            widthNeeded += 50*winrateTicksOH.length + 50*winrateTicksGIH.length
 
             // now actually display the headers and ticks
             resizeCanvas(widthNeeded, heightNeeded)
@@ -921,10 +921,6 @@ function draw() {
                     stroke(0, 0, 75)
                     strokeWeight(4)
                     point(xPosMeanGIH, yPos)
-                } else {
-                    noStroke()
-                    fill(0, 0, 100)
-                    text("Not enough data", startOfGIH + 210, yPos)
                 } if (cardsWithEnoughOHData.includes(cardName)) {
                     let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
                     let xPosWinrateOH = startOfOH + 200 + (winrateOH - winrateTicksOH[0])*10
@@ -941,10 +937,6 @@ function draw() {
                     stroke(0, 0, 75)
                     strokeWeight(4)
                     point(xPosMeanOH, yPos)
-                } else {
-                    noStroke()
-                    fill(0, 0, 100)
-                    text("Not enough data", startOfOH + 210, yPos)
                 }
 
                 noStroke()
@@ -954,9 +946,7 @@ function draw() {
             heightNeeded = yPos + 50
             fill(0, 0, 50)
             textAlign(LEFT, TOP)
-            text("Some cards might not have enough data (<500 samples). Those" +
-                " will not be shown \nhere.", 10, yPos - 10)
-            text("Cards that do not have enough data won't have winrates.", 10, yPos + 30)
+            text("Some cards might not have enough data (<500 samples). Cards that do not have enough data won't have winrates.", 10, yPos + 30)
 
             // display the SVG color selectors
             // iterate through each color ("in" accesses color, which we'll need)
