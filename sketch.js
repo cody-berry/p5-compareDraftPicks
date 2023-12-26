@@ -961,11 +961,11 @@ function draw() {
             // display the SVG color selectors
             // iterate through each color ("in" accesses color, which we'll need)
             noFill()
-            strokeWeight(1)
+            strokeWeight(2)
             for (let color in SVGsOn) {
                 let colorData = SVGsOn[color]
                 tint(0, 0, 25)
-                stroke(0, 0, 50)
+                stroke(0, 0, 25)
                 if (colorData[0]) { // is the SVG on?
                     tint(colorData[1][0], colorData[1][1], colorData[1][2])
                     stroke(colorData[1][0], colorData[1][1], colorData[1][2])
