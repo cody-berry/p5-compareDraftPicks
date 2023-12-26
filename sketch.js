@@ -55,7 +55,7 @@ function preload() {
     SVGsOn = { // each key is a color. each value is [SVG on?, color, xPos]
         "W": [false, [60, 15, 100], 200],
         "U": [false, [190, 50, 85], 240],
-        "B": [false, [300, 15, 40], 280],
+        "B": [false, [300, 5, 50], 280],
         "R": [false, [0, 65, 90], 320],
         "G": [false, [90, 100, 60], 360]
     }
