@@ -840,108 +840,112 @@ function draw() {
             textSize(15)
             textAlign(LEFT, CENTER)
             for (let cardName of cardsSelected) {
-                i += 1
-
-                // display the alternating table color
-                fill(0, 0, 40 + 20 * (i % 2), 50)
-
-                // if it is the selected option, make it orange
-                // "+ matchedNames.length*10000" ensures that negative options
-                // don't prompt no card display
-                if (i - 1 === (option + cardsSelected.length * 10000) % cardsSelected.length) {
-                    fill(30, 100, 90 + 10 * (i % 2), 50)
-                }
-
-                rect(0, yPos - 15, width, 30)
-
-                // display the card name
-                fill(0, 0, 100)
-                text(cardName, 10, yPos - 3)
-
-                // find out the grades and display them
+                // is there enough data?
                 let cardStats = data[cardName][colorPair]
+                if (cardStats["# GD"] > 30) {
+                    print(cardName, cardStats["# GD"])
+                    i += 1
 
-                // OH
-                let grade = calculateGrade(cardStats["zScoreOH"])
-                fill(gradeColors[grade][0],
-                    gradeColors[grade][1],
-                    gradeColors[grade][2])
-                stroke(gradeColors[grade][0],
-                    gradeColors[grade][1],
-                    gradeColors[grade][2])
-                strokeWeight(1)
-                if (cardsWithEnoughOHData.includes(cardName)) {
-                    text(grade, startOfOH, yPos - 2)
+                    // display the alternating table color
+                    fill(0, 0, 40 + 20 * (i % 2), 50)
+
+                    // if it is the selected option, make it orange
+                    // "+ matchedNames.length*10000" ensures that negative options
+                    // don't prompt no card display
+                    if (i - 1 === (option + cardsSelected.length * 10000) % cardsSelected.length) {
+                        fill(30, 100, 90 + 10 * (i % 2), 50)
+                    }
+
+                    rect(0, yPos - 15, width, 30)
+
+                    // display the card name
+                    fill(0, 0, 100)
+                    text(cardName, 10, yPos - 3)
+
+                    // find out the grades and display them
+                    // OH
+                    let grade = calculateGrade(cardStats["zScoreOH"])
+                    fill(gradeColors[grade][0],
+                        gradeColors[grade][1],
+                        gradeColors[grade][2])
+                    stroke(gradeColors[grade][0],
+                        gradeColors[grade][1],
+                        gradeColors[grade][2])
+                    strokeWeight(1)
+                    if (cardsWithEnoughOHData.includes(cardName)) {
+                        text(grade, startOfOH, yPos - 2)
+                    }
+
+                    // display the rectangle for the samples as well
+                    let startingYPosOfSamples = yPos - 4
+                    let heightOfSampleBar = 8
+                    let xPosSamplesOH = (cardStats["# OH"] / oneTickNumOH) * 50
+                    noStroke()
+                    fill(0, 0, 100)
+                    rect(startOfOH + 60, startingYPosOfSamples, xPosSamplesOH, heightOfSampleBar, 0, 4, 4, 0)
+
+                    // GIH
+                    grade = calculateGrade(cardStats["zScoreGIH"])
+                    fill(gradeColors[grade][0],
+                        gradeColors[grade][1],
+                        gradeColors[grade][2])
+                    stroke(gradeColors[grade][0],
+                        gradeColors[grade][1],
+                        gradeColors[grade][2])
+                    strokeWeight(1)
+                    if (cardsWithEnoughGIHData.includes(cardName)) {
+                        text(grade, startOfGIH, yPos - 2)
+                    }
+
+                    // display the rectangle for the samples as well
+                    // we don't have to re-define the context variables
+                    let xPosSamplesGIH = (cardStats["# GD"] / oneTickNumGIH) * 50
+                    noStroke()
+                    fill(0, 0, 100)
+                    rect(startOfGIH + 60, startingYPosOfSamples, xPosSamplesGIH, heightOfSampleBar, 0, 4, 4, 0)
+
+
+                    textAlign(LEFT, CENTER)
+                    // display the point for the winrate
+                    if (cardsWithEnoughGIHData.includes(cardName)) {
+                        let winrateGIH = cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1)
+                        let xPosWinrateGIH = startOfGIH + 200 + (winrateGIH - winrateTicksGIH[0]) * 10
+                        let meanGIH = winrateStatistics[colorPair]["GIH WR"]["μ"]
+                        let xPosMeanGIH = startOfGIH + 200 + (meanGIH - winrateTicksGIH[0]) * 10
+                        stroke(0, 0, 50)
+                        strokeWeight(3)
+                        line(xPosWinrateGIH, yPos, xPosMeanGIH, yPos)
+
+                        stroke(0, 0, 100)
+                        strokeWeight(5)
+                        point(xPosWinrateGIH, yPos)
+
+                        stroke(0, 0, 75)
+                        strokeWeight(4)
+                        point(xPosMeanGIH, yPos)
+                    }
+                    if (cardsWithEnoughOHData.includes(cardName)) {
+                        let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
+                        let xPosWinrateOH = startOfOH + 200 + (winrateOH - winrateTicksOH[0]) * 10
+                        let meanOH = winrateStatistics[colorPair]["OH WR"]["μ"]
+                        let xPosMeanOH = startOfOH + 200 + (meanOH - winrateTicksOH[0]) * 10
+                        stroke(0, 0, 50)
+                        strokeWeight(3)
+                        line(xPosWinrateOH, yPos, xPosMeanOH, yPos)
+
+                        stroke(0, 0, 100)
+                        strokeWeight(5)
+                        point(xPosWinrateOH, yPos)
+
+                        stroke(0, 0, 75)
+                        strokeWeight(4)
+                        point(xPosMeanOH, yPos)
+                    }
+
+                    noStroke()
+
+                    yPos += 30
                 }
-
-                // display the rectangle for the samples as well
-                let startingYPosOfSamples = yPos - 4
-                let heightOfSampleBar = 8
-                let xPosSamplesOH = (cardStats["# OH"] / oneTickNumOH) * 50
-                noStroke()
-                fill(0, 0, 100)
-                rect(startOfOH + 60, startingYPosOfSamples, xPosSamplesOH, heightOfSampleBar, 0, 4, 4, 0)
-
-                // GIH
-                grade = calculateGrade(cardStats["zScoreGIH"])
-                fill(gradeColors[grade][0],
-                    gradeColors[grade][1],
-                    gradeColors[grade][2])
-                stroke(gradeColors[grade][0],
-                    gradeColors[grade][1],
-                    gradeColors[grade][2])
-                strokeWeight(1)
-                if (cardsWithEnoughGIHData.includes(cardName)) {
-                    text(grade, startOfGIH, yPos - 2)
-                }
-
-                // display the rectangle for the samples as well
-                // we don't have to re-define the context variables
-                let xPosSamplesGIH = (cardStats["# GD"] / oneTickNumGIH) * 50
-                noStroke()
-                fill(0, 0, 100)
-                rect(startOfGIH + 60, startingYPosOfSamples, xPosSamplesGIH, heightOfSampleBar, 0, 4, 4, 0)
-
-
-                textAlign(LEFT, CENTER)
-                // display the point for the winrate
-                if (cardsWithEnoughGIHData.includes(cardName)) {
-                    let winrateGIH = cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1)
-                    let xPosWinrateGIH = startOfGIH + 200 + (winrateGIH - winrateTicksGIH[0]) * 10
-                    let meanGIH = winrateStatistics[colorPair]["GIH WR"]["μ"]
-                    let xPosMeanGIH = startOfGIH + 200 + (meanGIH - winrateTicksGIH[0])*10
-                    stroke(0, 0, 50)
-                    strokeWeight(3)
-                    line(xPosWinrateGIH, yPos, xPosMeanGIH, yPos)
-
-                    stroke(0, 0, 100)
-                    strokeWeight(5)
-                    point(xPosWinrateGIH, yPos)
-
-                    stroke(0, 0, 75)
-                    strokeWeight(4)
-                    point(xPosMeanGIH, yPos)
-                } if (cardsWithEnoughOHData.includes(cardName)) {
-                    let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
-                    let xPosWinrateOH = startOfOH + 200 + (winrateOH - winrateTicksOH[0])*10
-                    let meanOH = winrateStatistics[colorPair]["OH WR"]["μ"]
-                    let xPosMeanOH = startOfOH + 200 + (meanOH - winrateTicksOH[0])*10
-                    stroke(0, 0, 50)
-                    strokeWeight(3)
-                    line(xPosWinrateOH, yPos, xPosMeanOH, yPos)
-
-                    stroke(0, 0, 100)
-                    strokeWeight(5)
-                    point(xPosWinrateOH, yPos)
-
-                    stroke(0, 0, 75)
-                    strokeWeight(4)
-                    point(xPosMeanOH, yPos)
-                }
-
-                noStroke()
-
-                yPos += 30
             }
             heightNeeded = yPos + 50
             fill(0, 0, 50)
@@ -991,7 +995,7 @@ function findSampleTicks(maximumValueNeededToRepresent) {
     } if (maximumValueNeededToRepresent > 30) {
         oneTick = "30"
         twoTick = "60"
-        oneTickNum = 60
+        oneTickNum = 30
     } if (maximumValueNeededToRepresent > 60) {
         zeroTick = "0K"
         oneTick = "0.1K"
