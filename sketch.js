@@ -561,6 +561,11 @@ function draw() {
             textAlign(LEFT, TOP)
             text("STATS", 10, 0)
 
+            // as well as ALSA
+            noStroke()
+            textSize(20)
+            text(`ALSA ${parseFloat(data[cardsSelected[0]]["ALSA"]).toFixed(2)}`, 190, 10)
+
             // display the image for the card
             if (!images.hasOwnProperty(cardsSelected[0])) {
                 images[cardsSelected[0]] = loadImage(`cardImages/lci/${cardsSelected[0]}.jpg`)
