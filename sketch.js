@@ -426,7 +426,7 @@ function draw() {
     } if (displayState === "STATS") {
         // display headers
         // also find out ticks
-        let startOfOH = 240 // the starting x-position of the OH section
+        let startOfOH = 280 // the starting x-position of the OH section
         let startOfGIH = startOfOH + 210 // the starting x-position of the GIH section
         let widthNeeded = startOfGIH + 210 // the width needed. takes effect this frame
         let maxSamplesOH = 0 // the maximum samples of each card in OH
@@ -813,12 +813,13 @@ function draw() {
             textAlign(LEFT, TOP)
             text("STATS", 10, 0)
 
-            // and now display the actual headers: Name, OH, and GIH
+            // and now display the actual headers: Name, ALSA, OH, and GIH
             fill(0, 0, 50)
             noStroke()
             textSize(12)
             let yPosHeaders = 65
             text("Name", 10, yPosHeaders)
+            text("ALSA", 240, yPosHeaders)
 
             fill(0, 0, 100)
             text("OH", startOfOH, yPosHeaders)
@@ -861,6 +862,9 @@ function draw() {
                     // display the card name
                     fill(0, 0, 100)
                     text(cardName, 10, yPos - 3)
+
+                    // display the card ALSA, padded with 0s so that it always has 2 decimal points
+                    text(parseFloat(data[cardName]["ALSA"]).toFixed(2), 240, yPos - 3)
 
                     // find out the grades and display them
                     // OH
