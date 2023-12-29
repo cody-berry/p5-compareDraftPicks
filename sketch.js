@@ -648,24 +648,24 @@ function draw() {
                 text(grade, textCenterXPosGIH, textCenterYPos)
 
                 // display the winrate
-                let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
-                let meanOH = winrateStatistics["all"]["OH WR"]["μ"]
+                let winrateGIH = cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1)
+                let meanGIH = winrateStatistics["all"]["GIH WR"]["μ"]
 
                 // line between mean and winrate
                 stroke(0, 0, 50)
                 strokeWeight(3)
-                line(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, startingYPos + 55,
-                    startOfOH + 210 + (winrateOH - winrateTicksOH[0])*10, startingYPos + 55)
+                line(startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10, startingYPos + 55,
+                    startOfGIH + 210 + (winrateGIH - winrateTicksGIH[0])*10, startingYPos + 55)
 
                 // winrate
                 stroke(0, 0, 100)
                 strokeWeight(5)
-                point(startOfOH + 210 + (winrateOH - winrateTicksOH[0])*10, startingYPos + 55)
+                point(startOfGIH + 210 + (winrateGIH - winrateTicksGIH[0])*10, startingYPos + 55)
 
                 // mean
                 stroke(0, 0, 75)
                 strokeWeight(4)
-                point(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, startingYPos + 55)
+                point(startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10, startingYPos + 55)
             } else {
                 text("Not enough data", widthNeeded - 150, startingYPos + 55)
             }
