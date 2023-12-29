@@ -678,6 +678,11 @@ function draw() {
                 startOfGIH, startOfOH, startingYPos, // X and Y positions
                 colorPairsWithEnoughData // used to figure out how long the lines are
             )
+            // as well as "OH" and "GD"
+            noStroke()
+            fill(0, 0, 100)
+            text("OH", startOfOH + 9, startingYPos)
+            text("GD", startOfGIH + 9, startingYPos)
 
             // display the samples (number)
             let samplesOH = cardStats["# OH"]
