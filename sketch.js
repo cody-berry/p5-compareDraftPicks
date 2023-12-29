@@ -697,8 +697,17 @@ function draw() {
 
             // repeat for all available color pairs
             let yPos = startingYPos + 115
+            let i = true // switches on and off to tell whether there's an addition
             for (let colorPair of colorPairsWithEnoughData) {
-                // display the calibre
+                if (i) {
+                    noStroke()
+                    fill(0, 0, 100, 20)
+                    rectMode(CORNER)
+                    rect(300, yPos - 30, width, 60)
+                }
+                i = !i
+
+                // display the color pair
                 let calibreWidth = 55
                 let padding = 2
                 let xPos = startOfOH - calibreWidth*3/4 - padding
