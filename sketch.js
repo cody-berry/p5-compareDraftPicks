@@ -69,9 +69,9 @@ function calculateGrade(zScore) {
     if (zScore > 3.25)
         result = "S"
     // A range (1.5 <= zScore < 3.25)
-    else if (zScore > (2.5 - 1 / 3))
+    else if (zScore > 2.5)
         result = "A+"
-    else if (zScore > (1.5 + 1 / 3))
+    else if (zScore > 2)
         result = "A"
     else if (zScore > 1.5)
         result = "A-"
@@ -701,7 +701,7 @@ function draw() {
             for (let colorPair of colorPairsWithEnoughData) {
                 if (i) {
                     noStroke()
-                    fill(0, 0, 100, 20)
+                    fill(0, 0, 100, 10)
                     rectMode(CORNER)
                     rect(300, yPos - 30, width, 60)
                 }
