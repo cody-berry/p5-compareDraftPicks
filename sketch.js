@@ -369,13 +369,28 @@ function displayTicks(zeroTickOH, // 0K or 0M
 }
 
 // I couldn't find a good name for this one. But essentially, what it's doing is
-// converting a number to 5K or 0.1M notation.
+// converting a number to 5K or 0.3M notation.
 function simplifyNum(num) {
     // 100000 = 0.1M, which is the splitter for using 0.3M notation and using
     // 5K notation.
     // round(num/100)*100 rounds the number to the nearest hundredth. M means
     // dividing by 1,000,000 and K means dividing by 1,000.
     return (num > 100000) ? (round(num/100)*100/1000000 + "M") : (round(num/100)*100/1000 + "K");
+}
+
+function drawStDevTicks(winrateTicks, winrate,
+                        winrateMean, overallStDev,
+                        xPos, yPos) {
+    // each winrate percentage is 10 xPos
+    let winrateXPos = xPos + (winrate - winrateTicks[0])*10
+    let winrateMeanXPos = xPos + (winrateMean - winrateTicks[0])*10
+    let xDeltaPerStDev = overallStDev*10
+
+    fill(0, 0, 50)
+    for (xPos = min(winrateXPos, winrateMeanXPos) + xDeltaPerStDev;
+         xPos < max(winrateXPos, winrateMeanXPos); xPos += xDeltaPerStDev) {
+        line(xPos, yPos - 3, xPos, yPos + 3)
+    }
 }
 
 function draw() {
