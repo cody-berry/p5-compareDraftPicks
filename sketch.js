@@ -378,6 +378,7 @@ function simplifyNum(num) {
     return (num > 100000) ? (round(num/100)*100/1000000 + "M") : (round(num/100)*100/1000 + "K");
 }
 
+// draws the standard deviation ticks for a winrate
 function drawStDevTicks(winrateTicks, winrate,
                         winrateMean, overallStDev,
                         xPos, yPos) {
@@ -386,10 +387,11 @@ function drawStDevTicks(winrateTicks, winrate,
     let winrateMeanXPos = xPos + (winrateMean - winrateTicks[0])*10
     let xDeltaPerStDev = overallStDev*10
 
-    fill(0, 0, 50)
+    stroke(0, 0, 50)
+    strokeWeight(3)
     for (xPos = min(winrateXPos, winrateMeanXPos) + xDeltaPerStDev;
          xPos < max(winrateXPos, winrateMeanXPos); xPos += xDeltaPerStDev) {
-        line(xPos, yPos - 3, xPos, yPos + 3)
+        line(xPos, yPos - 5, xPos, yPos + 5)
     }
 }
 
@@ -637,6 +639,10 @@ function draw() {
                 stroke(0, 0, 75)
                 strokeWeight(4)
                 point(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, startingYPos + 55)
+
+                drawStDevTicks(winrateTicksOH, winrateOH,
+                               meanOH, winrateStatistics["all"]["OH WR"]["σ"],
+                               startOfOH + 210, startingYPos + 55)
             } else {
                 fill(0, 0, 100)
                 textSize(15)
@@ -681,6 +687,10 @@ function draw() {
                 stroke(0, 0, 75)
                 strokeWeight(4)
                 point(startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10, startingYPos + 55)
+
+                drawStDevTicks(winrateTicksGIH, winrateGIH,
+                               meanGIH, winrateStatistics["all"]["GIH WR"]["σ"],
+                               startOfGIH + 210, startingYPos + 55)
             } else {
                 text("Not enough data", widthNeeded - 150, startingYPos + 55)
             }
