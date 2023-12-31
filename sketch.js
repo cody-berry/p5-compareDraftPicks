@@ -820,6 +820,15 @@ function draw() {
                 point(xPosMeanOH, yPos)
                 point(xPosMeanGIH, yPos)
 
+                drawStDevTicks(
+                    winrateTicksOH, winrateOH,
+                    meanOH, winrateStatistics[colorPair]["OH WR"]["σ"],
+                    startOfOH + 210, yPos)
+                drawStDevTicks(
+                    winrateTicksGIH, winrateGIH,
+                    meanGIH, winrateStatistics[colorPair]["GIH WR"]["σ"],
+                    startOfGIH + 210, yPos)
+
                 yPos += 60
             }
 
