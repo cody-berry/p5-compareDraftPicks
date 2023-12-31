@@ -980,6 +980,11 @@ function draw() {
                         stroke(0, 0, 75)
                         strokeWeight(4)
                         point(xPosMeanGIH, yPos)
+
+                        drawStDevTicks(
+                            winrateTicksGIH, winrateGIH,
+                            meanGIH, winrateStatistics[colorPair]["GIH WR"]["σ"],
+                            startOfGIH + 210, yPos)
                     }
                     if (cardsWithEnoughOHData.includes(cardName)) {
                         let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
@@ -997,6 +1002,11 @@ function draw() {
                         stroke(0, 0, 75)
                         strokeWeight(4)
                         point(xPosMeanOH, yPos)
+
+                        drawStDevTicks(
+                            winrateTicksOH, winrateOH,
+                            meanOH, winrateStatistics[colorPair]["OH WR"]["σ"],
+                            startOfOH + 210, yPos)
                     }
 
                     noStroke()
