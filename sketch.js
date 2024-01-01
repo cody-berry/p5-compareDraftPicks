@@ -484,10 +484,11 @@ function draw() {
         } else if (cardsSelected.length === 1) { // special case: display color pairs
             // find out ticks for OH WR and GIH WR, which means finding the
             // maximum OH WR and GIH WR values
-            let startingYPos = height/2 - 70 // starting y pos is in the middle
+            let startingYPos = 180 // starting y pos is in the middle
             let startOfOH = 360 // the starting x-position of the OH section
             let startOfGIH = startOfOH + 210 // the starting x-position of the GIH section
             let widthNeeded = startOfGIH + 210 // the width needed. takes effect this frame
+            let heightNeeded = 500 // the height needed. takes effect this frame
             let maxSamplesOH = 0 // the maximum samples of each card in OH
             let maxSamplesGIH = 0 // the maximum samples of each card in GIH
             let maxWinrateOH = 0 // the maximum OH winrate of the cards
@@ -523,6 +524,11 @@ function draw() {
 
                     startingYPos -= 30
                 }
+            }
+            if (startingYPos < 20) {
+                // make the difference between 20 and startingYPos add to the height twice
+                heightNeeded += 2*(20 - startingYPos)
+                startingYPos = 20
             }
             let cardStats = data[cardsSelected[0]]["all"]
             if (cardStats["OH WR"] !== "") {
@@ -567,7 +573,12 @@ function draw() {
             widthNeeded += max(winrateTicksGIH.length * xPositionBetweenWinrateTicks, 100) + max(winrateTicksOH.length * xPositionBetweenWinrateTicks, 100)
 
             // now actually display the screen
-            resizeCanvas(widthNeeded, 500)
+            resizeCanvas(widthNeeded, heightNeeded)
+            if (frameCount % 120 < 10) {
+                print(heightNeeded)
+            } if (frameCount % 120 === 10) {
+                print("-----")
+            }
             background(0, 0, 0)
 
             // display a big STATS header
