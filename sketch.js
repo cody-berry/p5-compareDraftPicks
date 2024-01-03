@@ -1335,6 +1335,19 @@ function mousePressed() {
                     toggleColor("G")
                 }
             }
+        } if (cardsSelected.length === 1) {
+            if (mouseX > 185 && mouseX < 285 &&
+                mouseY > 38 && mouseY < 60) {
+                if (calibre === "ALL") {
+                    calibre = "TOP"
+                    data = dataTop
+                    winrateStatistics = winrateStatisticsTop
+                } else {
+                    calibre = "ALL"
+                    data = dataAll
+                    winrateStatistics = winrateStatisticsAll
+                }
+            }
         }
     }
 }
