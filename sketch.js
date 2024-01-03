@@ -869,7 +869,6 @@ function draw() {
 
                 yPos += 60
             }
-
         } else {
             let ticksOH = findSampleTicks(maxSamplesOH)
             let ticksGIH = findSampleTicks(maxSamplesGIH)
@@ -910,6 +909,28 @@ function draw() {
             textSize(12)
             let yPosHeaders = 65
             text("Name", 10, yPosHeaders)
+
+            // display calibre
+            if (calibre === "TOP") {
+                fill(240, 80, 60) // color for TOP
+                rect(50, yPosHeaders - 5, 50, 22)
+            } else {
+                fill(60, 80, 60) // color for ALL
+                rect(100, yPosHeaders - 5, 50, 22)
+            }
+
+            textSize(20)
+            fill(0, 0, 100)
+            text("TOP", 55, yPosHeaders - 7)
+            text("ALL", 105, yPosHeaders - 7)
+            noFill()
+            stroke(0, 0, 25)
+            rect(50, yPosHeaders - 5, 50, 22)
+            rect(100, yPosHeaders - 5, 50, 22)
+
+            fill(0, 0, 100)
+            noStroke()
+            textSize(10)
             text("ALSA", 240, yPosHeaders)
 
             fill(0, 0, 100)
@@ -1201,6 +1222,10 @@ function keyPressed() {
         if (keyCode === DOWN_ARROW) {
             option += 1
         }
+        // if W, U, B, R, or G is pressed in the multi-card popup screen, toggle that color
+        if (["W", "U", "B", "R", "G", "w", "u", "b", "r", "g"].includes(key) && cardsSelected.length > 1) {
+            toggleColor(key.toUpperCase())
+        }
     }
     if (displayState === "SEARCH") {
         if ([ // all letters able to type, preventing things like F12 from being added
@@ -1333,6 +1358,18 @@ function mousePressed() {
                     toggleColor("R")
                 } if (mouseX > xPosMinW + GOffset && mouseX < xPosMaxW + GOffset) {
                     toggleColor("G")
+                }
+            }
+            if (mouseX > 50 && mouseX < 150 &&
+                mouseY > 60 && mouseY < 82) {
+                if (calibre === "ALL") {
+                    calibre = "TOP"
+                    data = dataTop
+                    winrateStatistics = winrateStatisticsTop
+                } else {
+                    calibre = "ALL"
+                    data = dataAll
+                    winrateStatistics = winrateStatisticsAll
                 }
             }
         } if (cardsSelected.length === 1) {
