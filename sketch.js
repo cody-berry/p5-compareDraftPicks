@@ -1,5 +1,5 @@
 /**
- *  @author 
+ *  @author
  *  @date 2023.
  *
  */
@@ -12,7 +12,11 @@ let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 
 let data
+let dataAll
+let dataTop
 let winrateStatistics
+let winrateStatisticsAll
+let winrateStatisticsTop
 let cardNames
 
 let searchBox = ""
@@ -28,6 +32,7 @@ let WUBRG
 let SVGsOn = {}
 let colorsSelected = 0
 let colorPair = "all"
+let calibre = "ALL"
 
 let displayState = "SEARCH"
 
@@ -36,8 +41,10 @@ function preload() {
     font = loadFont('data/meiryo.ttf')
     fixedWidthFont = loadFont('data/consola.ttf')
     variableWidthFont = loadFont('data/meiryo.ttf')
-    data = loadJSON("json/master.json")
-    winrateStatistics = loadJSON("json/statistics.json")
+    dataAll = loadJSON("json/master.json")
+    dataTop = loadJSON("json/masterTop.json")
+    winrateStatisticsAll = loadJSON("json/statistics.json")
+    winrateStatisticsTop = loadJSON("json/statisticsTop.json")
     WUBRG = {
         "W": loadImage("WUBRG/W.png"),
         "U": loadImage("WUBRG/U.png"),
@@ -112,6 +119,9 @@ function setup() {
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
     print(images)
+
+    data = dataAll
+    winrateStatistics = winrateStatisticsAll
 
     /* initialize instruction div */
     instructions = select('#ins')
@@ -303,7 +313,7 @@ function displayTicks(zeroTickOH, // 0K or 0M
                       startOfOH, // the starting x position of OH
                       startingYPos, // the starting y position for everything
                       colorPairsWithEnoughData // the color pairs with enough data
-                      ) {
+) {
     // array for all the offsets, OH and GIH
     let offsetsForLines = [
         60, 110, 160
@@ -456,9 +466,9 @@ function draw() {
         let cardsWithEnoughGIHData = [] // the cards with enough data such that it has GIH winrate data
         for (let cardName of cardsSelected) {
             let cardStats = data[cardName][colorPair] // grab the data for all color pairs
-                // update if needed
-                maxSamplesOH = max(maxSamplesOH, cardStats["# OH"])
-                maxSamplesGIH = max(maxSamplesGIH, cardStats["# GD"])
+            // update if needed
+            maxSamplesOH = max(maxSamplesOH, cardStats["# OH"])
+            maxSamplesGIH = max(maxSamplesGIH, cardStats["# GD"])
 
             if (cardStats["OH WR"] !== "") { // check for enough data
                 minWinrateOH = min(minWinrateOH, cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1))
@@ -594,6 +604,23 @@ function draw() {
             textSize(20)
             text(`ALSA ${parseFloat(data[cardsSelected[0]]["ALSA"]).toFixed(2)}`, 190, 10)
 
+            // display calibre
+            if (calibre === "TOP") {
+                fill(240, 80, 60) // color for TOP
+                rect(185, 38, 50, 22)
+            } else {
+                fill(60, 80, 60) // color for ALL
+                rect(235, 38, 50, 22)
+            }
+
+            fill(0, 0, 100)
+            text("TOP", 190, 35)
+            text("ALL", 240, 35)
+            noFill()
+            stroke(0, 0, 25)
+            rect(185, 38, 50, 22)
+            rect(235, 38, 50, 22)
+
             // display the image for the card
             if (!images.hasOwnProperty(cardsSelected[0])) {
                 images[cardsSelected[0]] = loadImage(`cardImages/lci/${cardsSelected[0]}.jpg`)
@@ -652,8 +679,8 @@ function draw() {
                 point(startOfOH + 210 + (meanOH - winrateTicksOH[0])*10, startingYPos + 55)
 
                 drawStDevTicks(winrateTicksOH, winrateOH,
-                               meanOH, winrateStatistics["all"]["OH WR"]["σ"],
-                               startOfOH + 210, startingYPos + 55)
+                    meanOH, winrateStatistics["all"]["OH WR"]["σ"],
+                    startOfOH + 210, startingYPos + 55)
             } else {
                 fill(0, 0, 100)
                 textSize(15)
@@ -700,8 +727,8 @@ function draw() {
                 point(startOfGIH + 210 + (meanGIH - winrateTicksGIH[0])*10, startingYPos + 55)
 
                 drawStDevTicks(winrateTicksGIH, winrateGIH,
-                               meanGIH, winrateStatistics["all"]["GIH WR"]["σ"],
-                               startOfGIH + 210, startingYPos + 55)
+                    meanGIH, winrateStatistics["all"]["GIH WR"]["σ"],
+                    startOfGIH + 210, startingYPos + 55)
             } else {
                 text("Not enough data", widthNeeded - 150, startingYPos + 55)
             }
