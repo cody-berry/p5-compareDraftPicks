@@ -22,6 +22,7 @@ let cardNames
 let searchBox = ""
 let option
 let cardsSelected = []
+let cardsDisplayedLastFrame = []
 let addSelectedOptionToCards = false
 
 let heightNeeded = 0
@@ -952,10 +953,12 @@ function draw() {
             let yPos = 100
             textSize(15)
             textAlign(LEFT, CENTER)
+            let cardsDisplayedThisFrame = []
             for (let cardName of cardsSelected) {
                 // is there enough data?
                 let cardStats = data[cardName][colorPair]
                 if (cardStats["# GD"] > 30) {
+                    cardsDisplayedThisFrame.push(cardName)
                     print(cardName, cardStats["# GD"])
                     i += 1
 
@@ -965,7 +968,7 @@ function draw() {
                     // if it is the selected option, make it orange
                     // "+ matchedNames.length*10000" ensures that negative options
                     // don't prompt no card display
-                    if (i - 1 === (option + cardsSelected.length * 10000) % cardsSelected.length) {
+                    if (i - 1 === (option + cardsDisplayedLastFrame.length * 10000) % cardsDisplayedLastFrame.length) {
                         fill(30, 100, 90 + 10 * (i % 2), 50)
                     }
 
@@ -1073,6 +1076,7 @@ function draw() {
                     yPos += 30
                 }
             }
+            cardsDisplayedLastFrame = cardsDisplayedThisFrame
             heightNeeded = yPos + 50
             fill(0, 0, 50)
             textAlign(LEFT, TOP)
