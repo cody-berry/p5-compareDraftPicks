@@ -452,7 +452,7 @@ function draw() {
 
         // display all cards selected
         let i = 0
-        let yPos = 530
+        let yPos = (cardsExpanded) ? max(530, 230 + numMatches*30) : 530
         let heightOfBlock = 30 // the height of each row
         noStroke()
         textSize(15)
@@ -1293,6 +1293,7 @@ function keyPressed() {
             } else {
                 searchBox = searchBox.substring(0, searchBox.length - 1)
             }
+            cardsExpanded = false
         }
         if (keyCode === UP_ARROW) {
             option -= 1
@@ -1314,13 +1315,6 @@ function keyPressed() {
             else {
                 addSelectedOptionToCards = true
             }
-        }
-        // press expand/collapse button
-        if (mouseX > width - 40 && mouseX < width - 10 &&
-            mouseY > 410 && mouseY < 435) {
-            cardsExpanded = !cardsExpanded
-            print(cardsExpanded)
-            print("toggled")
         }
     }
 
@@ -1417,6 +1411,14 @@ function mousePressed() {
                     winrateStatistics = winrateStatisticsAll
                 }
             }
+        }
+    } else {
+        // press expand/collapse button
+        if (mouseX > width - 40 && mouseX < width - 10 &&
+            mouseY > 410 && mouseY < 435) {
+            cardsExpanded = true
+            print(cardsExpanded)
+            print("toggled")
         }
     }
 }
