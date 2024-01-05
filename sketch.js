@@ -24,6 +24,8 @@ let option
 let cardsSelected = []
 let cardsDisplayedLastFrame = []
 let addSelectedOptionToCards = false
+let cardsExpanded = false
+let numMatches = 0
 
 let heightNeeded = 0
 let gradeColors
@@ -36,6 +38,7 @@ let colorPair = "all"
 let calibre = "ALL"
 
 let displayState = "SEARCH"
+
 
 
 function preload() {
@@ -188,10 +191,7 @@ function drawTextBox() {
             for (let cardName of cardNames) {
                 // make sure there's no repeats!
                 if (!matchedNames.includes(cardName) && cardName.toLowerCase().substring(i, i + searchBox.length) === searchBox.toLowerCase()) {
-                    // limit to num cards is 9
-                    if (matchedNames.length < 9) {
-                        matchedNames.push(cardName)
-                    }
+                    matchedNames.push(cardName)
                 }
             }
             i += 1
@@ -200,53 +200,71 @@ function drawTextBox() {
 
     let i = 0
     for (let cardName of matchedNames) {
-        i += 1
+        if (i < 9 || cardsExpanded === true) {
+            i += 1
 
-        // fill and display alternating table color
-        fillAlternatingTableColor(i)
+            // fill and display alternating table color
+            fillAlternatingTableColor(i)
 
-        // if it is part of the cards list, make it green
-        if (cardsSelected.includes(cardName)) {
-            fill(120, 50, 50)
-        }
-
-        // if it is the selected option, make it orange
-        // "+ matchedNames.length*10000" ensures that negative options
-        // don't prompt no card display
-        if (i - 1 === (option + matchedNames.length * 10000) % matchedNames.length) {
-            fill(30, 100, 50)
-
-            // if it's the selected option and it's part of the card list, make it a slightly green-ish orange color
+            // if it is part of the cards list, make it green
             if (cardsSelected.includes(cardName)) {
-                fill(52, 87, 50)
+                fill(120, 50, 50)
             }
+
+            // if it is the selected option, make it orange
+            // "+ matchedNames.length*10000" ensures that negative options
+            // don't prompt no card display
+            if (i - 1 === (option + matchedNames.length * 10000) % matchedNames.length) {
+                fill(30, 100, 50)
+
+                // if it's the selected option and it's part of the card list, make it a slightly green-ish orange color
+                if (cardsSelected.includes(cardName)) {
+                    fill(52, 87, 50)
+                }
+            }
+
+            rect(0, yPos - 15, width, 30)
+
+            // display the card name
+            fill(0, 0, 100)
+            text(cardName, 10, yPos - 3)
+
+            // bold the first match. not all of them
+            stroke(0, 0, 100)
+            strokeWeight(1)
+
+            // enable caseless matching by making both lowercase
+            let lowerCaseCardName = cardName.toLowerCase()
+            let lowerCaseSearchBox = searchBox.toLowerCase()
+
+            // now, match the lowercase variables
+            let firstOccurenceOfSearchBoxInCardName = lowerCaseCardName.indexOf(lowerCaseSearchBox)
+
+            // convert the match back to its proper case
+            let matchInCardName = cardName.substring(firstOccurenceOfSearchBoxInCardName, firstOccurenceOfSearchBoxInCardName + searchBox.length)
+
+            // and display it now
+            text(matchInCardName, 10 + textWidth(cardName.substring(0, firstOccurenceOfSearchBoxInCardName)), yPos - 3)
+            noStroke()
+            yPos += 30
         }
-
-        rect(0, yPos - 15, width, 30)
-
-        // display the card name
-        fill(0, 0, 100)
-        text(cardName, 10, yPos - 3)
-
-        // bold the first match. not all of them
-        stroke(0, 0, 100)
-        strokeWeight(1)
-
-        // enable caseless matching by making both lowercase
-        let lowerCaseCardName = cardName.toLowerCase()
-        let lowerCaseSearchBox = searchBox.toLowerCase()
-
-        // now, match the lowercase variables
-        let firstOccurenceOfSearchBoxInCardName = lowerCaseCardName.indexOf(lowerCaseSearchBox)
-
-        // convert the match back to its proper case
-        let matchInCardName = cardName.substring(firstOccurenceOfSearchBoxInCardName, firstOccurenceOfSearchBoxInCardName + searchBox.length)
-
-        // and display it now
-        text(matchInCardName, 10 + textWidth(cardName.substring(0, firstOccurenceOfSearchBoxInCardName)), yPos - 3)
-        noStroke()
-        yPos += 30
     }
+    if (matchedNames.length > 9 && !cardsExpanded) {
+        fill(0, 0, 50)
+        text(`...and ${matchedNames.length - 9} more`, 10, yPos)
+
+        // draw the expand button
+        if (mouseX > width - 40 && mouseX < width - 10 &&
+            mouseY > yPos - 10 && mouseY < yPos + 15) {
+            fill(0, 0, 30)
+        }
+        rect(width - 40, yPos - 10, 30, 25)
+        fill(0, 0, 100)
+        triangle(width - 35, yPos - 5,
+                 width - 15, yPos - 5,
+                 width - 25, yPos + 10)
+    }
+
     // if there are no matches, say it
     if (i === 0 && searchBox) {
         text("No matches found", 10, 150)
@@ -267,6 +285,8 @@ function drawTextBox() {
 
     // make sure that the option isn't added to the list the next time
     addSelectedOptionToCards = false
+
+    numMatches = matchedNames.length
 }
 
 // just fills a certain grey color according to the number of these drawn, i
@@ -428,11 +448,11 @@ function draw() {
         stroke(0, 0, 100)
         strokeWeight(2)
         textAlign(LEFT, BOTTOM)
-        text("CARD LIST", 0, 470)
+        text("CARD LIST", 0, (cardsExpanded) ? max(500, 200 + numMatches*30) : 500)
 
         // display all cards selected
         let i = 0
-        let yPos = 500
+        let yPos = 530
         let heightOfBlock = 30 // the height of each row
         noStroke()
         textSize(15)
@@ -1254,6 +1274,7 @@ function keyPressed() {
             if (!keyIsDown(CONTROL) && !keyIsDown(ALT)) {
                 searchBox += key
                 option = 0
+                cardsExpanded = false
             }
         }
         if (key === "Backspace") {
@@ -1293,6 +1314,13 @@ function keyPressed() {
             else {
                 addSelectedOptionToCards = true
             }
+        }
+        // press expand/collapse button
+        if (mouseX > width - 40 && mouseX < width - 10 &&
+            mouseY > 410 && mouseY < 435) {
+            cardsExpanded = !cardsExpanded
+            print(cardsExpanded)
+            print("toggled")
         }
     }
 
