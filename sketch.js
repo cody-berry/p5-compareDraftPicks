@@ -426,6 +426,19 @@ function drawStDevTicks(winrateTicks, winrate,
     }
 }
 
+function compareWinrates(cardNameA, cardNameB) {
+    let cardSelectedA = data[cardNameA]
+    let colorPairDataA = cardSelectedA[colorPair]
+    let winrateA = float(colorPairDataA["GIH WR"].substring(0, colorPairDataA["GIH WR"].length - 1))
+    let cardSelectedB = data[cardNameB]
+    let colorPairDataB = cardSelectedB[colorPair]
+    let winrateB = float(colorPairDataB["GIH WR"].substring(0, colorPairDataB["GIH WR"].length - 1))
+    if (frameCount % 50 === 0) {
+        print(winrateA, winrateB, cardNameA, cardNameB)
+    }
+    return winrateB - winrateA
+}
+
 function draw() {
     if (displayState === "SEARCH") {
         resizeCanvas(500, heightNeeded)
@@ -974,12 +987,13 @@ function draw() {
             textSize(15)
             textAlign(LEFT, CENTER)
             let cardsDisplayedThisFrame = []
-            for (let cardName of cardsSelected) {
+            let sortedCardsSelected = cardsSelected
+            sortedCardsSelected.sort(compareWinrates)
+            for (let cardName of sortedCardsSelected) {
                 // is there enough data?
                 let cardStats = data[cardName][colorPair]
                 if (cardStats["# GD"] > 30) {
                     cardsDisplayedThisFrame.push(cardName)
-                    print(cardName, cardStats["# GD"])
                     i += 1
 
                     // display the alternating table color
