@@ -36,7 +36,8 @@ let SVGsOn = {}
 let colorsSelected = 0
 let colorPair = "all"
 let calibre = "ALL"
-let sortingMethod = "GIH"
+let sortingMethod = "MIX"
+let cardsSaved = false
 
 let displayState = "SEARCH"
 
@@ -433,12 +434,28 @@ function parseAsWinrate(winrate) {
 }
 
 function compareWinrates(cardNameA, cardNameB) {
-    let cardSelectedA = data[cardNameA]
-    let colorPairDataA = cardSelectedA[colorPair]
-    let winrateA = float(colorPairDataA[sortingMethod + " WR"].substring(0, colorPairDataA[sortingMethod + " WR"].length - 1))
-    let cardSelectedB = data[cardNameB]
-    let colorPairDataB = cardSelectedB[colorPair]
-    let winrateB = float(colorPairDataB[sortingMethod + " WR"].substring(0, colorPairDataB[sortingMethod + " WR"].length - 1))
+    let winrateA
+    let winrateB
+
+    if (sortingMethod === "MIX") {
+        let cardSelectedA = data[cardNameA]
+        let colorPairDataA = cardSelectedA[colorPair]
+        let winrateAOH = float(colorPairDataA["OH WR"].substring(0, colorPairDataA["OH WR"].length - 1))
+        let winrateAGIH = float(colorPairDataA["GIH WR"].substring(0, colorPairDataA["GIH WR"].length - 1))
+        winrateA = winrateAOH/2 + winrateAGIH/2
+        let cardSelectedB = data[cardNameB]
+        let colorPairDataB = cardSelectedB[colorPair]
+        let winrateBOH = float(colorPairDataB["OH WR"].substring(0, colorPairDataB["OH WR"].length - 1))
+        let winrateBGIH = float(colorPairDataB["GIH WR"].substring(0, colorPairDataB["GIH WR"].length - 1))
+        winrateB = winrateBOH/2 + winrateBGIH/2
+    } else {
+        let cardSelectedA = data[cardNameA]
+        let colorPairDataA = cardSelectedA[colorPair]
+        winrateA = float(colorPairDataA[sortingMethod + " WR"].substring(0, colorPairDataA[sortingMethod + " WR"].length - 1))
+        let cardSelectedB = data[cardNameB]
+        let colorPairDataB = cardSelectedB[colorPair]
+        winrateB = float(colorPairDataB[sortingMethod + " WR"].substring(0, colorPairDataB[sortingMethod + " WR"].length - 1))
+    }
     return parseAsWinrate(winrateB) - parseAsWinrate(winrateA)
 }
 
@@ -970,18 +987,24 @@ function draw() {
             if (sortingMethod === "GIH") {
                 fill(240, 80, 60) // color for GIH
                 rect(510, 10, 40, 22)
-            } else {
+            } else if (sortingMethod === "OH") {
                 fill(300, 80, 60) // color for OH
                 rect(550, 10, 40, 22)
+            } else {
+                fill(270, 80, 60) // color for mix
+                rect(510, 32, 80, 16)
             }
 
             fill(0, 0, 100)
             text("GD", 515, 8)
             text("OH", 555, 8)
+            textSize(15)
+            text("GD+OH", 522, 30)
             noFill()
             stroke(0, 0, 25)
             rect(510, 10, 40, 22)
             rect(550, 10, 40, 22)
+            rect(510, 32, 80, 16)
 
             fill(0, 0, 100)
             noStroke()
@@ -1154,6 +1177,23 @@ function draw() {
                 image(WUBRGSVGs[color], colorData[2] + 3, 18, 30, 30)
             }
             tint(0, 0, 100)
+            noStroke()
+
+            // toggle save
+            fill(0, 0, 25)
+            if (mouseX > 600 && mouseX < 650 &&
+                mouseY > 10 && mouseY < 30) fill(0, 0, 20)
+            rect(600, 10, 50, 20)
+            textSize(20)
+            fill(0, 0, 100)
+            text("SAVE", 600, 7)
+            if (cardsSaved) {
+                textSize(10)
+                fill(120, 100, 50)
+                stroke(120, 100, 50)
+                strokeWeight(0.5)
+                text("Cards have been saved", 600, 32)
+            }
         }
     }
 
@@ -1270,7 +1310,8 @@ function keyPressed() {
                 // use CTRL+ENTER to toggle
                 // without this, then CTRL+ENTER on STATS switches to SEARCH and then goes back to STATS
                 justEnteredSearch = true
-                cardsSelected = []
+                if (!cardsSaved) cardsSelected = []
+                cardsSaved = false
             } else {
                 cardsSelected = [cardsSelected[(option + cardsSelected.length * 10000) % cardsSelected.length]]
             }
@@ -1409,19 +1450,13 @@ function mousePressed() {
                 let BOffset = 80
                 let ROffset = 120
                 let GOffset = 160
-                if (mouseX > xPosMinW && mouseX < xPosMaxW) {
-                    toggleColor("W")
-                } if (mouseX > xPosMinW + UOffset && mouseX < xPosMaxW + UOffset) {
-                    toggleColor("U")
-                } if (mouseX > xPosMinW + BOffset && mouseX < xPosMaxW + BOffset) {
-                    toggleColor("B")
-                } if (mouseX > xPosMinW + ROffset && mouseX < xPosMaxW + ROffset) {
-                    toggleColor("R")
-                } if (mouseX > xPosMinW + GOffset && mouseX < xPosMaxW + GOffset) {
-                    toggleColor("G")
-                }
+                if (mouseX > xPosMinW && mouseX < xPosMaxW) toggleColor("W")
+                if (mouseX > xPosMinW + UOffset && mouseX < xPosMaxW + UOffset) toggleColor("U")
+                if (mouseX > xPosMinW + BOffset && mouseX < xPosMaxW + BOffset) toggleColor("B")
+                if (mouseX > xPosMinW + ROffset && mouseX < xPosMaxW + ROffset) toggleColor("R")
+                if (mouseX > xPosMinW + GOffset && mouseX < xPosMaxW + GOffset) toggleColor("G")
             }
-            if (mouseX > 400 && mouseX < 450 &&
+            if (mouseX > 400 && mouseX < 500 &&
                 mouseY > 8 && mouseY < 30) {
                 if (calibre === "ALL") {
                     calibre = "TOP"
@@ -1434,12 +1469,12 @@ function mousePressed() {
                 }
             } if (mouseX > 510 && mouseX < 590 &&
                   mouseY > 8 && mouseY < 30) {
-                if (sortingMethod === "OH") {
-                    sortingMethod = "GIH"
-                } else {
-                    sortingMethod = "OH"
-                }
-            }
+                if (sortingMethod === "OH" || sortingMethod === "MIX") sortingMethod = "GIH"
+                else sortingMethod = "OH"
+            } if (mouseX > 510 && mouseX < 590 &&
+                  mouseY > 30 && mouseY < 46) sortingMethod = "MIX"
+            if (mouseX > 600 && mouseX < 650 &&
+                mouseY > 10 && mouseY < 30) cardsSaved = true
         } if (cardsSelected.length === 1) {
             if (mouseX > 185 && mouseX < 285 &&
                 mouseY > 38 && mouseY < 60) {
