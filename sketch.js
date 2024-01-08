@@ -426,6 +426,11 @@ function drawStDevTicks(winrateTicks, winrate,
     }
 }
 
+function parseAsWinrate(winrate) {
+    if (winrate) return winrate
+    else return 0
+}
+
 function compareWinrates(cardNameA, cardNameB) {
     let cardSelectedA = data[cardNameA]
     let colorPairDataA = cardSelectedA[colorPair]
@@ -433,10 +438,7 @@ function compareWinrates(cardNameA, cardNameB) {
     let cardSelectedB = data[cardNameB]
     let colorPairDataB = cardSelectedB[colorPair]
     let winrateB = float(colorPairDataB["GIH WR"].substring(0, colorPairDataB["GIH WR"].length - 1))
-    if (frameCount % 50 === 0) {
-        print(winrateA, winrateB, cardNameA, cardNameB)
-    }
-    return winrateB - winrateA
+    return parseAsWinrate(winrateB) - parseAsWinrate(winrateA)
 }
 
 function draw() {
