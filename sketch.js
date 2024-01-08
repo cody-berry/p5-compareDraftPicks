@@ -36,6 +36,7 @@ let SVGsOn = {}
 let colorsSelected = 0
 let colorPair = "all"
 let calibre = "ALL"
+let sortingMethod = "GIH"
 
 let displayState = "SEARCH"
 
@@ -434,10 +435,10 @@ function parseAsWinrate(winrate) {
 function compareWinrates(cardNameA, cardNameB) {
     let cardSelectedA = data[cardNameA]
     let colorPairDataA = cardSelectedA[colorPair]
-    let winrateA = float(colorPairDataA["GIH WR"].substring(0, colorPairDataA["GIH WR"].length - 1))
+    let winrateA = float(colorPairDataA[sortingMethod + " WR"].substring(0, colorPairDataA[sortingMethod + " WR"].length - 1))
     let cardSelectedB = data[cardNameB]
     let colorPairDataB = cardSelectedB[colorPair]
-    let winrateB = float(colorPairDataB["GIH WR"].substring(0, colorPairDataB["GIH WR"].length - 1))
+    let winrateB = float(colorPairDataB[sortingMethod + " WR"].substring(0, colorPairDataB[sortingMethod + " WR"].length - 1))
     return parseAsWinrate(winrateB) - parseAsWinrate(winrateA)
 }
 
@@ -527,7 +528,8 @@ function draw() {
         // make sure there are actually cards with enough data!
         if (cardsSelected.length === 0) {
             noDataScreen()
-        } else if (cardsSelected.length === 1) { // special case: display color pairs
+        } else if (cardsSelected.length === 1) {
+            // special case: display color pairs
             // find out ticks for OH WR and GIH WR, which means finding the
             // maximum OH WR and GIH WR values
             let startingYPos = 180 // starting y pos is in the middle
@@ -642,7 +644,7 @@ function draw() {
 
             // display calibre
             if (calibre === "TOP") {
-                fill(240, 80, 60) // color for TOP
+                fill(120, 80, 60) // color for TOP
                 rect(185, 38, 50, 22)
             } else {
                 fill(60, 80, 60) // color for ALL
@@ -948,21 +950,38 @@ function draw() {
 
             // display calibre
             if (calibre === "TOP") {
-                fill(240, 80, 60) // color for TOP
-                rect(50, yPosHeaders - 5, 50, 22)
+                fill(120, 80, 60) // color for TOP
+                rect(400, 10, 50, 22)
             } else {
                 fill(60, 80, 60) // color for ALL
-                rect(100, yPosHeaders - 5, 50, 22)
+                rect(450, 10, 50, 22)
             }
 
             textSize(20)
             fill(0, 0, 100)
-            text("TOP", 55, yPosHeaders - 7)
-            text("ALL", 105, yPosHeaders - 7)
+            text("TOP", 405, 8)
+            text("ALL", 455, 8)
             noFill()
             stroke(0, 0, 25)
-            rect(50, yPosHeaders - 5, 50, 22)
-            rect(100, yPosHeaders - 5, 50, 22)
+            rect(400, 10, 50, 22)
+            rect(450, 10, 50, 22)
+
+            // display sorting method
+            if (sortingMethod === "GIH") {
+                fill(240, 80, 60) // color for GIH
+                rect(510, 10, 40, 22)
+            } else {
+                fill(300, 80, 60) // color for OH
+                rect(550, 10, 40, 22)
+            }
+
+            fill(0, 0, 100)
+            text("GD", 515, 8)
+            text("OH", 555, 8)
+            noFill()
+            stroke(0, 0, 25)
+            rect(510, 10, 40, 22)
+            rect(550, 10, 40, 22)
 
             fill(0, 0, 100)
             noStroke()
@@ -1402,8 +1421,8 @@ function mousePressed() {
                     toggleColor("G")
                 }
             }
-            if (mouseX > 50 && mouseX < 150 &&
-                mouseY > 60 && mouseY < 82) {
+            if (mouseX > 400 && mouseX < 450 &&
+                mouseY > 8 && mouseY < 30) {
                 if (calibre === "ALL") {
                     calibre = "TOP"
                     data = dataTop
@@ -1412,6 +1431,13 @@ function mousePressed() {
                     calibre = "ALL"
                     data = dataAll
                     winrateStatistics = winrateStatisticsAll
+                }
+            } if (mouseX > 510 && mouseX < 590 &&
+                  mouseY > 8 && mouseY < 30) {
+                if (sortingMethod === "OH") {
+                    sortingMethod = "GIH"
+                } else {
+                    sortingMethod = "OH"
                 }
             }
         } if (cardsSelected.length === 1) {
