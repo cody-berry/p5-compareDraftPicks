@@ -587,7 +587,7 @@ function draw() {
 
                     colorPairsWithEnoughData.push(colorPair)
 
-                    startingYPos -= 30
+                    startingYPos -= 20
                 }
             }
             if (startingYPos < 20) {
@@ -687,17 +687,17 @@ function draw() {
 
             // display the OH and GIH grades
             let gradeYPos = startingYPos + 30
-            let gradeSquareSize = 50
+            let gradeSquareSize = 30
             let gradeSquarePadding = 5
-            let textCenterXPosOH = startOfOH + gradeSquareSize/2
-            let textCenterXPosGIH = startOfGIH + gradeSquareSize/2
-            let textCenterYPos = gradeYPos + 22
+            let textCenterXPosOH = startOfOH + gradeSquareSize/2 + 20
+            let textCenterXPosGIH = startOfGIH + gradeSquareSize/2 + 20
+            let textCenterYPos = gradeYPos + 13
             // display a padded grey rectangle for OH
             // only if it has enough data though!
             if (allOHDataAvailable) {
                 fill(0, 0, 50)
                 noStroke()
-                rect(startOfOH, gradeYPos, gradeSquareSize, gradeSquareSize, gradeSquarePadding)
+                rect(startOfOH + 20, gradeYPos, gradeSquareSize, gradeSquareSize, gradeSquarePadding)
 
                 cardStats = data[cardsSelected[0]]["all"]
                 // get the grade and display it at the center
@@ -709,7 +709,7 @@ function draw() {
                     gradeColors[grade][1],
                     gradeColors[grade][2])
                 strokeWeight(2)
-                textSize(25)
+                textSize(18)
                 textAlign(CENTER, CENTER)
                 text(grade, textCenterXPosOH, textCenterYPos)
 
@@ -747,7 +747,7 @@ function draw() {
             if (allGIHDataAvailable) {
                 fill(0, 0, 50)
                 noStroke()
-                rect(startOfGIH, gradeYPos, gradeSquareSize, gradeSquareSize, gradeSquarePadding)
+                rect(startOfGIH + 20, gradeYPos, gradeSquareSize, gradeSquareSize, gradeSquarePadding)
 
 
                 let grade = calculateGrade(cardStats["zScoreGIH"])
@@ -758,7 +758,7 @@ function draw() {
                     gradeColors[grade][1],
                     gradeColors[grade][2])
                 strokeWeight(2)
-                textSize(25)
+                textSize(18)
                 text(grade, textCenterXPosGIH, textCenterYPos)
 
                 // display the winrate
@@ -814,14 +814,14 @@ function draw() {
             text(simplifyNum(samplesGIH), startOfGIH + 60, textCenterYPos)
 
             // repeat for all available color pairs
-            let yPos = startingYPos + 115
+            let yPos = startingYPos + 85
             let i = true // switches on and off to tell whether there's an addition
             for (let colorPair of colorPairsWithEnoughData) {
                 if (i) {
                     noStroke()
                     fill(0, 0, 100, 10)
                     rectMode(CORNER)
-                    rect(300, yPos - 30, width, 60)
+                    rect(300, yPos - 20, width, 40)
                 }
                 i = !i
 
@@ -838,15 +838,15 @@ function draw() {
                 }
 
                 // display the OH and GIH grades, same as last time
-                let gradeYPos = yPos - 25
-                let gradeSquareSize = 50
-                let gradeSquarePadding = 5
-                let textCenterXPosOH = startOfOH + gradeSquareSize/2
-                let textCenterXPosGIH = startOfGIH + gradeSquareSize/2
-                let textCenterYPos = gradeYPos + 22
+                let gradeYPos = yPos - 15
+                let gradeSquareSize = 30
+                let gradeSquarePadding = 3
+                let textCenterXPosOH = startOfOH + gradeSquareSize/2 + 20
+                let textCenterXPosGIH = startOfGIH + gradeSquareSize/2 + 20
+                let textCenterYPos = gradeYPos + 13
                 noStroke()
                 fill(0, 0, 50)
-                rect(startOfOH, gradeYPos, gradeSquareSize, gradeSquareSize, gradeSquarePadding)
+                rect(startOfOH + 20, gradeYPos, gradeSquareSize, gradeSquareSize, gradeSquarePadding)
 
                 cardStats = data[cardsSelected[0]][colorPair]
                 let grade = calculateGrade(cardStats["zScoreOH"])
@@ -857,14 +857,14 @@ function draw() {
                     gradeColors[grade][1],
                     gradeColors[grade][2])
                 strokeWeight(2)
-                textSize(25)
+                textSize(18)
                 textAlign(CENTER, CENTER)
                 text(grade, textCenterXPosOH, textCenterYPos)
 
 
                 fill(0, 0, 50)
                 noStroke()
-                rect(startOfGIH, gradeYPos, gradeSquareSize, gradeSquareSize, gradeSquarePadding)
+                rect(startOfGIH + 20, gradeYPos, gradeSquareSize, gradeSquareSize, gradeSquarePadding)
 
 
                 grade = calculateGrade(cardStats["zScoreGIH"])
@@ -875,7 +875,7 @@ function draw() {
                     gradeColors[grade][1],
                     gradeColors[grade][2])
                 strokeWeight(2)
-                textSize(25)
+                textSize(18)
                 text(grade, textCenterXPosGIH, textCenterYPos)
 
 
@@ -922,7 +922,7 @@ function draw() {
                     meanGIH, winrateStatistics[colorPair]["GIH WR"]["σ"],
                     startOfGIH + 210, yPos)
 
-                yPos += 60
+                yPos += 40
             }
         } else {
             let ticksOH = findSampleTicks(maxSamplesOH)
