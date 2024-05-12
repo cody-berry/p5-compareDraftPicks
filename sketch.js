@@ -132,7 +132,68 @@ function setup() {
     /* initialize instruction div */
     instructions = select('#ins')
     instructions.html(`<pre>
-        numpad 1 → freeze sketch</pre>`)
+        numpad 1 → freeze sketch
+        search screen: 
+            this is the initial screen. 
+            input partial card names into the mini textbox. 
+            use DOWN ARROW and UP ARROW to move between cards.
+            click on the button with the down arrow to expand to all cards. 
+            press ENTER to toggle the selection of the card marked orange.
+            press CTRL+ENTER to:
+                move to the single-card popup screen if 1 card is selected. 
+                move to the no-card popup screen if 0 cards are selected. 
+                move to the multi-card popup screen if 2 cards are selected.
+        no-card popup screen: 
+            does not show anything.
+            press CTRL+ENTER to go back to SEARCH screen.
+        single-card popup screen:
+            the left column is for the color pair
+            the middle column is for opening-hand winrate. 
+            the right column is for game-drawn winrate. 
+            each column has 3 parts:
+                the grade part, displaying a grey rect with a grade on it.
+                the sample part, which is what the 10K and 5 ticks are for. 
+                    a bar will be displayed here in each row.
+                    this bar corresponds to how many samples according to ticks.
+                the winrate part, which is what the percentage ticks are for. 
+                    the grey dot is the mean. 
+                    the white dot is the actual winrate. 
+                    the dark grey line connects the dot. 
+                    the ticks correspond to the z-score. 
+                        the ticks correspond to 1, 2, 3, etc. z-score. 
+            each row corresponds to a color pair, with the first being all. 
+            the ALSA will be displayed on the top-left.
+            toggle between TOP and ALL data just below the ALSA.
+            press CTRL+ENTER to go back to SEARCH screen.
+        multi-card popup screen:
+            columns are much like single-card popup screen.
+                except with an additional one for ALSA between left and middle.
+                and a replacaement for the left one as the name.
+            each row corresponds to a color. 
+            use DOWN ARROW and UP ARROW to move between cards.
+            press ENTER to move to the single-card popup screen.
+                the card in that popup is the card selected. 
+            toggle between TOP and ALL data at the top. 
+            press the colors to toggle them on or off. 
+                on deselecting all of them, the stats goes to all color data.
+                on selecting 2 of them, the stats goes to the colors selected.
+                    note: these are color pairs, not colors on their own.
+                selecting 3 is not allowed.
+            press the GD/OH/GD+OH button to toggle the sort.
+                GD: sort by GD winrate.
+                    click on GD or OH to switch to OH.
+                    click on GD+OH to switch to GD+OH.
+                OH: sort by OH winrate.
+                    click on GD or OH to switch to GD.
+                    click on GD+OH to switch to GD+OH.
+                GD+OH: average out the two. this provides something like GIH.
+                    click on GD or OH to switch to GD.
+                cards without enough data will be counted as low Fs.
+                cards will be sorted from how they were sorted before.
+            press the SAVE button once to keep card selection after exitting.
+                if you go to single-card popup screen, only that card is saved.
+            press CTRL+ENTER to go back to SEARCH screen.
+        </pre>`)
 
     debugCorner = new CanvasDebugCorner(5)
     cardNames = Object.keys(data)
@@ -318,7 +379,7 @@ function noDataScreen() {
 function findWinrateTicks(minWinrate, maxWinrate) {
     // iterate through every tick needed for OH and GIH (increments of 5)
     let winrateTicks = []
-    for (let i = minWinrate - (maxWinrate - minWinrate)/10; i < maxWinrate + (maxWinrate - minWinrate)/4; i += 5) {
+    for (let i = minWinrate - (maxWinrate - minWinrate)/10; i < maxWinrate + (maxWinrate - minWinrate)/2; i += 5) {
         winrateTicks.push(Math.round(i))
     }
     return winrateTicks
