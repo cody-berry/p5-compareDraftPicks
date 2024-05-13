@@ -1140,7 +1140,7 @@ function draw() {
                     let xPosSamplesOH = (cardStats["# OH"] / oneTickNumOH) * 50
                     noStroke()
                     fill(0, 0, 100)
-                    rect(startOfOH + 60, startingYPosOfSamples, xPosSamplesOH, heightOfSampleBar, 0, 4, 4, 0)
+                    rect(startOfOH + 40, startingYPosOfSamples, xPosSamplesOH, heightOfSampleBar, 0, 4, 4, 0)
 
                     // GIH
                     grade = calculateGrade(cardStats["zScoreGIH"])
@@ -1160,16 +1160,16 @@ function draw() {
                     let xPosSamplesGIH = (cardStats["# GD"] / oneTickNumGIH) * 50
                     noStroke()
                     fill(0, 0, 100)
-                    rect(startOfGIH + 60, startingYPosOfSamples, xPosSamplesGIH, heightOfSampleBar, 0, 4, 4, 0)
+                    rect(startOfGIH + 40, startingYPosOfSamples, xPosSamplesGIH, heightOfSampleBar, 0, 4, 4, 0)
 
 
                     textAlign(LEFT, CENTER)
                     // display the point for the winrate
                     if (cardsWithEnoughGIHData.includes(cardName)) {
                         let winrateGIH = cardStats["GIH WR"].substring(0, cardStats["GIH WR"].length - 1)
-                        let xPosWinrateGIH = startOfGIH + 200 + (winrateGIH - winrateTicksGIH[0]) * 10
+                        let xPosWinrateGIH = startOfGIH + 180 + (winrateGIH - winrateTicksGIH[0]) * 10
                         let meanGIH = winrateStatistics[colorPair]["GIH WR"]["μ"]
-                        let xPosMeanGIH = startOfGIH + 200 + (meanGIH - winrateTicksGIH[0]) * 10
+                        let xPosMeanGIH = startOfGIH + 180 + (meanGIH - winrateTicksGIH[0]) * 10
                         stroke(0, 0, 50)
                         strokeWeight(3)
                         line(xPosWinrateGIH, yPos, xPosMeanGIH, yPos)
@@ -1185,13 +1185,13 @@ function draw() {
                         drawStDevTicks(
                             winrateTicksGIH, winrateGIH,
                             meanGIH, winrateStatistics[colorPair]["GIH WR"]["σ"],
-                            startOfGIH + 210, yPos)
+                            startOfGIH + 190, yPos)
                     }
                     if (cardsWithEnoughOHData.includes(cardName)) {
                         let winrateOH = cardStats["OH WR"].substring(0, cardStats["OH WR"].length - 1)
-                        let xPosWinrateOH = startOfOH + 200 + (winrateOH - winrateTicksOH[0]) * 10
+                        let xPosWinrateOH = startOfOH + 180 + (winrateOH - winrateTicksOH[0]) * 10
                         let meanOH = winrateStatistics[colorPair]["OH WR"]["μ"]
-                        let xPosMeanOH = startOfOH + 200 + (meanOH - winrateTicksOH[0]) * 10
+                        let xPosMeanOH = startOfOH + 180 + (meanOH - winrateTicksOH[0]) * 10
                         stroke(0, 0, 50)
                         strokeWeight(3)
                         line(xPosWinrateOH, yPos, xPosMeanOH, yPos)
@@ -1207,7 +1207,7 @@ function draw() {
                         drawStDevTicks(
                             winrateTicksOH, winrateOH,
                             meanOH, winrateStatistics[colorPair]["OH WR"]["σ"],
-                            startOfOH + 210, yPos)
+                            startOfOH + 190, yPos)
                     }
 
                     noStroke()
