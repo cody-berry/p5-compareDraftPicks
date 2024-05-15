@@ -718,9 +718,10 @@ function draw() {
             // as well as ALSA
             noStroke()
             textSize(20)
-            text(`ALSA\n${parseFloat(data[cardsSelected[0]]["ALSA"]).toFixed(2)}`, startOfGIH - 60, height - 100)
+            text(`ALSA ${parseFloat(data[cardsSelected[0]]["ALSA"]).toFixed(2)}`, 10, height - 50)
 
             // display calibre
+            // displayed as ALL and TOP connected in 2 boxes, one filled
             if (calibre === "TOP") {
                 fill(120, 80, 60) // color for TOP
                 rect(185, 38, 50, 22)
