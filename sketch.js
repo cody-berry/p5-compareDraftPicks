@@ -610,11 +610,11 @@ function draw() {
             // special case: display color pairs
             // find out ticks for OH WR and GIH WR, which means finding the
             // maximum OH WR and GIH WR values
-            let startingYPos = 180 // starting y pos is in the middle
+            let startingYPos = 205 // starting y pos is in the middle
             let startOfOH = 390 // the starting x-position of the OH section
             let startOfGIH = startOfOH + 210 // the starting x-position of the GIH section
             let widthNeeded = startOfGIH + 210 // the width needed. takes effect this frame
-            let heightNeeded = 500 // the height needed. takes effect this frame
+            let heightNeeded = 550 // the height needed. takes effect this frame
             let maxSamplesOH = 0 // the maximum samples of each card in OH
             let maxSamplesGIH = 0 // the maximum samples of each card in GIH
             let maxWinrateOH = 0 // the maximum OH winrate of the cards
@@ -718,7 +718,7 @@ function draw() {
             // as well as ALSA
             noStroke()
             textSize(20)
-            text(`ALSA ${parseFloat(data[cardsSelected[0]]["ALSA"]).toFixed(2)}`, 190, 10)
+            text(`ALSA\n${parseFloat(data[cardsSelected[0]]["ALSA"]).toFixed(2)}`, startOfGIH - 60, height - 100)
 
             // display calibre
             if (calibre === "TOP") {
