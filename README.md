@@ -10,12 +10,13 @@ from Google Sheets drawings. <br>
 <br><br>
 According to Procreate it should look something like this:
 ![singleCardPopup1.JPEG](planning/singleCardPopupProcreate1.JPEG)
-<br><br><br><br>
+<br>
+<br>
 <b>⚠️This isn't finished.⚠️</b>
-
-
-
-
+<br>
+<br>
+<br>
+<br>
 I have a few ideas: <br>
 Small window at the top-left for the STATS header.<br>
 Below that is a table of winrates and grades. There is one row for each 
@@ -31,3 +32,6 @@ No secret gold card. Best color pair is WB, performs 0.2σ better than general d
 <br>
 This leaves some unused space in the bottom-right...which is definitely not convenient for the card image.<br>
 We can see where to put the card image (or if super inconvenient, the card name) later.<br>
+<br>
+The following is my planning: (Note: This planning has no correct diagrams or examples taken directly from 17lands.)
+![singleCardPopupProcreate2.JPEG](planning/singleCardPopupProcreate2.JPEG)
