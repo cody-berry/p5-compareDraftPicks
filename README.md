@@ -3,21 +3,7 @@ I've created py-util, which also has a p5-compareDraftPicks.
 Inside this project, we'll basically be doing the same thing! 
 Except, with data from py-util. <br><br>
 This project is currently in maintenance. UI planning is required. <br><br>
-Single-card popup screen planning, for now. 
-This is what part of the canvas should look like, 
-from Google Sheets drawings. <br>
-![singleCardPopup1.JPEG](planning/singleCardPopupGoogleSheets1.png)
-<br><br>
-According to Procreate it should look something like this:
-![singleCardPopup1.JPEG](planning/singleCardPopupProcreate1.JPEG)
-<br>
-<br>
-<b>⚠️This isn't finished.⚠️</b>
-<br>
-<br>
-<br>
-<br>
-I have a few ideas: <br>
+Single-card popup screen planning, for now. I have a few ideas: <br>
 Small window at the top-left for the STATS header.<br>
 Below that is a table of winrates and grades. There is one row for each 
 color pair, and there are 4 columns, them being ALL OH, ALL GD, TOP OH, and 
@@ -34,4 +20,4 @@ This leaves some unused space in the bottom-right...which is definitely not conv
 We can see where to put the card image (or if super inconvenient, the card name) later.<br>
 <br>
 The following is my planning: (Note: This planning has no correct diagrams or examples taken directly from 17lands.)
-![singleCardPopupProcreate2.JPEG](planning/singleCardPopupProcreate2.JPEG)
+![singleCardPopupProcreate2.JPEG](planning/singleCardPopupLeftSide2.JPEG)
