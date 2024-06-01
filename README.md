@@ -20,4 +20,4 @@ This leaves some unused space in the bottom-right...which is definitely not conv
 We can see where to put the card image (or if super inconvenient, the card name) later.<br>
 <br>
 The following is my planning: (Note: This planning has no correct diagrams or examples taken directly from 17lands.)
-![singleCardPopupProcreate2.JPEG](planning/singleCardPopupLeftSide2.JPEG)
+![singleCardPopupFull1.JPEG](planning/singleCardPopupFull1.JPEG)
