@@ -20,9 +20,7 @@ This leaves some unused space in the bottom-right...which is definitely not conv
 We can see where to put the card image (or if super inconvenient, the card name) later.<br>
 <br>
 The following is my planning: (Note: This planning has no correct diagrams or examples taken directly from 17lands.)
-![singleCardPopupFull2.JPEG](planning/singleCardPopupFull2.JPEG)
+![singleCardPopupFull2.JPEG](planning/singleCardPopupFull3.JPEG)
 <br>
 To be fair, I represented secret gold card and secret top card differently 
 than you guys would've expected me to. 
-There's unused space at the bottom. We can just cut that off.
-The unused space at the bottom-right, we can also just snip that part out with erase().
