@@ -740,7 +740,7 @@ function draw() {
 
             // display the image for the card
             if (!images.hasOwnProperty(cardsSelected[0])) {
-                images[cardsSelected[0]] = loadImage(`cardImages/otj/${cardsSelected[0]}.jpg`)
+                images[cardsSelected[0]] = loadImage(`cardImages/blb/${cardsSelected[0]}.jpg`)
             }
             let imageToDisplay = images[cardsSelected[0]]
             let aspectRatio = [28, 39]
